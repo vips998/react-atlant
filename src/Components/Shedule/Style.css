@@ -1,0 +1,28 @@
+.Shedule {
+  font-size: large;
+}
+.training-cell {
+  background-color: hwb(195 44% 11%);
+  padding: 10px;
+  margin: 5px 0;
+}
+.ant-table {
+  border-right: 4px solid #9a9a9a !important; /* Добавляем границу справа */
+  border-bottom: 4px solid #9a9a9a !important; /* Добавляем границу снизу */
+}
+.ant-table-cell {
+  border: 3px solid #9a9a9a; /* серая рамка для каждой ячейки */
+}
+
+.ant-table-thead > tr > th {
+  background-color: #b0b0b0 !important; /* Указываем !important для принудительного применения */
+  border-bottom: 4px solid #b0b0b0 !important; /* Указываем !important для принудительного применения */
+}
+
+.ant-table-tbody > tr > td {
+  background-color: #ffffff; /* Указываем !important для принудительного применения */
+}
+/* Стиль для ячеек с временным интервалом */
+.time-interval-highlight {
+  background-color: rgba(0, 0, 0, 0.2) !important; /* Цвет подсветки */
+}
