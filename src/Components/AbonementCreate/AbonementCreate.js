@@ -1,17 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Style.css";
-import {
-  Typography,
-  Form,
-  Button,
-  Input,
-  Modal,
-  Space,
-  Select,
-  Card,
-} from "antd";
-
-const { Option } = Select;
+import { Typography, Form, Button, Input, Modal, Space, Card } from "antd";
 
 const AbonementCreate = ({
   abonements,
@@ -21,14 +10,50 @@ const AbonementCreate = ({
   setUpAbonement,
   setAbonements,
   serviceTypes,
+  addServiceType,
+  removeServiceType,
   typeTrainings,
 }) => {
-  //console.log(abonement)
-
   // Изменение абонемента
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
+  // для услуги
+  const [isTypeServiceModalOpen, setIsTypeServiceModalOpen] = useState(false);
+  const [isTypeServiceCreateModalOpen, setIsTypeServiceCreateModalOpen] =
+    useState(false);
+  // открытие модального окна с услугами
+  const showTypeServiceModal = () => {
+    setIsTypeServiceModalOpen(true);
+  };
+  const handleTypeServiceModalClose = () => {
+    setIsTypeServiceModalOpen(false);
+  };
+
+  // Выбор услуги из 2-го модального окна
+  const handleServiceSelection = (id, nameService) => {
+    //e.preventDefault(); // Закрываем модальное окно с выбором типа тренировки
+    handleTypeServiceModalClose();
+    // Отобразим выбранный тип тренировки в модальном окне "Абонемент"
+    form.setFieldsValue({
+      typeServiceAbonement: nameService,
+    });
+    console.log(nameService);
+  };
+
+  // добавление новой услуги
+  // открытие модального окна со списком услуг
+  const showTypeServiceCreateModal = () => {
+    setIsTypeServiceCreateModalOpen(true);
+  };
+
+  // закрытие модального окна
+  const handleTypeServiceCreateModalClose = () => {
+    setIsTypeServiceCreateModalOpen(false);
+  };
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // для типа тренировки
   const [isTypeTrainingModalOpen, setIsTypeTrainingModalOpen] = useState(false);
   const [isTypeTrainingCreateModalOpen, setIsTypeTrainingCreateModalOpen] =
     useState(false);
@@ -97,7 +122,7 @@ const AbonementCreate = ({
 
   const handleModalCloseAndRefresh = () => {
     handleCancel(); // Закрыть модальное окно
-    window.location.reload(); // Обновить страницу
+    //window.location.reload(); // Обновить страницу
   };
 
   const updateAbonement = () => {
@@ -183,6 +208,8 @@ const AbonementCreate = ({
       typeTraining: valueTypeTraining,
     };
 
+    console.log("Новый абонемент : ", abonement);
+
     const createAbonement = async () => {
       const requestOptions = {
         method: "POST",
@@ -199,13 +226,13 @@ const AbonementCreate = ({
           if (response.ok) {
             console.log(data);
             addAbonement(data);
-            e.target.elements.nameAbonement.value = "";
-            e.target.elements.costAbonement.value = "";
-            e.target.elements.countVisitsAbonement.value = "";
-            e.target.elements.countDaysAbonement.value = "";
-            e.target.elements.countMonthsAbonement.value = "";
-            e.target.elements.typeServiceAbonement.value = "";
-            e.target.elements.typeTrainingAbonement.value = "";
+            e.nameAbonement = "";
+            e.costAbonement = "";
+            e.countVisitsAbonement = "";
+            e.countDaysAbonement = "";
+            e.countMonthsAbonement = "";
+            e.typeServiceAbonement = "";
+            e.typeTrainingAbonement = "";
           }
         },
 
@@ -213,6 +240,59 @@ const AbonementCreate = ({
       );
     };
     createAbonement();
+  };
+
+  //////////////////////////////////////////////////////////////////////////
+  const handleSubmitServiceType = (e) => {
+    //e.preventDefault();
+    const valueNameService = e.newtypeService;
+
+    const typeservice = {
+      nameService: valueNameService,
+    };
+
+    console.log("Новый тип услуги : ", typeservice);
+
+    const createServiceType = async () => {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(typeservice),
+      };
+
+      console.log(requestOptions);
+      const response = await fetch("api/ServiceTypes/", requestOptions);
+      return await response.json().then(
+        (data) => {
+          console.log(data);
+
+          if (response.ok) {
+            console.log(data);
+            addServiceType(data);
+            e.newtypeService = "";
+          }
+        },
+
+        (error) => console.log(error)
+      );
+    };
+    createServiceType();
+  };
+
+  const deleteServiceType = async ({ id }) => {
+    const requestOptions = {
+      method: "DELETE",
+    };
+    return await fetch(`api/ServiceTypes/${id}`, requestOptions).then(
+      (response) => {
+        if (response.ok) {
+          removeServiceType(id);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   };
   return (
     <React.Fragment>
@@ -303,24 +383,135 @@ const AbonementCreate = ({
               >
                 <Input placeholder="Количество месяцев" />
               </Form.Item>
-              <Form.Item
-                label="Тип услуги: "
-                name="typeServiceAbonement"
-                rules={[
-                  {
-                    required: true,
-                    message: "Выберите тип услуги",
-                  },
-                ]}
-              >
-                <Select placeholder="Выберите услугу">
-                  {serviceTypes.map(({ id, nameService }) => (
-                    <Option key={id} value={id}>
-                      {nameService}
-                    </Option>
-                  ))}
-                </Select>
+
+              <Form.Item label="Услуга: " name="typeServiceAbonement">
+                <Input.Group
+                  compact
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Form.Item
+                    name="typeServiceAbonement"
+                    noStyle
+                    rules={[
+                      {
+                        required: true,
+                        message: "Выберите услугу",
+                      },
+                    ]}
+                  >
+                    <Input
+                      style={{ width: "calc(100% - 100px)", color: "black" }}
+                      disabled
+                      placeholder="Услуга не выбрана"
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      onClick={showTypeServiceModal}
+                      style={{ width: "100px" }}
+                    >
+                      Выбрать
+                    </Button>
+                  </Form.Item>
+                </Input.Group>
               </Form.Item>
+              <Modal
+                title="Выберите услугу"
+                open={isTypeServiceModalOpen}
+                onCancel={handleTypeServiceModalClose}
+                footer={null}
+              >
+                {/* Список услуг */}
+                <Typography>
+                  <h3>Список услуг</h3>
+                  <Card>
+                    {serviceTypes.map(({ id, nameService }) => (
+                      <div className="TypeService" key={id} id={id}>
+                        {/* здесь можно тоже проверку на пользователя*/}
+                        <Card>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <h3>{nameService}</h3>
+                            <Button.Group>
+                              <Button
+                                style={{ width: "80px" }}
+                                type="primary"
+                                danger
+                                onClick={() => deleteServiceType({ id })}
+                              >
+                                Удалить
+                              </Button>
+                            </Button.Group>
+                          </div>
+                          <Button
+                            type="primary"
+                            style={{ marginTop: "10px", width: "100%" }}
+                            onClick={() =>
+                              handleServiceSelection(id, nameService)
+                            }
+                          >
+                            Выбрать
+                          </Button>
+                        </Card>
+                      </div>
+                    ))}
+                  </Card>
+                  <Card>
+                    <Button type="primary" onClick={showTypeServiceCreateModal}>
+                      Добавить новую услугу
+                    </Button>
+                  </Card>
+                </Typography>
+                {/*3 модальное окно - добавление типа тренировки*/}
+                <Modal
+                  title="Новая услуга"
+                  open={isTypeServiceCreateModalOpen}
+                  onCancel={handleTypeServiceCreateModalClose}
+                  footer={null}
+                >
+                  <Form
+                    onFinish={(values) => {
+                      handleSubmitServiceType(values);
+                      handleTypeTrainingCreateModalClose();
+                    }}
+                  >
+                    <Form.Item
+                      label="Услуга: "
+                      name="newtypeService"
+                      rules={[
+                        {
+                          required: false,
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Например: Йога" />
+                    </Form.Item>
+                    <Space>
+                      <Button
+                        style={{
+                          position: "absolute",
+                          right: 20,
+                        }}
+                        type="primary"
+                        htmlType="submit"
+                      >
+                        Подтвердить
+                      </Button>
+                    </Space>
+                  </Form>
+                  <Button onClick={handleTypeServiceCreateModalClose}>
+                    Отменить
+                  </Button>
+                </Modal>
+              </Modal>
+
               <Form.Item label="Тип тренировки: " name="typeTrainingAbonement">
                 <Input.Group
                   compact
@@ -377,9 +568,6 @@ const AbonementCreate = ({
                           >
                             <h3>{nameType}</h3>
                             <Button.Group>
-                              <Button style={{ width: "90px" }} type="primary">
-                                Изменить
-                              </Button>
                               <Button
                                 style={{ width: "80px" }}
                                 type="primary"

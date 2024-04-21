@@ -48,8 +48,8 @@ const App = ({ user }) => {
           >
             АТЛАНТ - Фитнес клуб
           </Col>
-          <Col span={16}></Col>
-          <Col span={2}>
+          <Col span={12}></Col>
+          <Col span={6}>
             <div
               style={{
                 float: "right",
@@ -58,7 +58,11 @@ const App = ({ user }) => {
             >
               {user.isAuthenticated ? (
                 <>
-                  <strong>{user.userName}</strong>
+                  <strong>
+                    {user.userRole === "user"
+                      ? `Баланс: 100 рублей ${user.userName}`
+                      : user.userName}
+                  </strong>
                 </>
               ) : (
                 <>

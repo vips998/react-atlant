@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import Abonement from "./Components/Abonement/Abonement";
 import AbonementCreate from "./Components/AbonementCreate/AbonementCreate";
@@ -18,41 +18,25 @@ function App() {
   const addAbonement = (abonement) => setAbonements([...abonements, abonement]);
   const removeAbonement = (removeID) =>
     setAbonements(abonements.filter(({ Id }) => Id !== removeID));
-  const [user, setUser] = useState({ isAuthenticated: false, userName: "" });
+  const [user, setUser] = useState({
+    isAuthenticated: false,
+    id: "",
+    userName: "",
+    userRole: "",
+  });
   const [upAbonement, setUpAbonement] = useState({});
   const [schedules, setSchedules] = useState({});
   const [serviceTypes, setServiceTypes] = useState([]);
+  const addServiceType = (serviceType) =>
+    setServiceTypes([...serviceTypes, serviceType]);
+  const removeServiceType = (removeID) =>
+    setServiceTypes(serviceTypes.filter(({ Id }) => Id !== removeID));
   const [typeTrainings, setTypeTrainings] = useState([]);
-
-  useEffect(() => {
-    const getUser = async () => {
-      return await fetch("api/account/isauthenticated")
-        .then((response) => {
-          response.status === 401 &&
-            setUser({ isAuthenticated: false, userName: "" });
-          return response.json();
-        })
-        .then(
-          (data) => {
-            if (
-              typeof data !== "undefined" &&
-              typeof data.userName !== "undefined"
-            ) {
-              setUser({ isAuthenticated: true, userName: data.userName });
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-    getUser();
-  }, [setUser]);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout user={user} />}>
+        <Route path="/" element={<Layout user={user} setUser={setUser} />}>
           <Route
             path="/Shedules"
             element={
@@ -69,7 +53,10 @@ function App() {
             path="/Abonements"
             element={
               <>
-                <ServiceType setServiceTypes={setServiceTypes} />
+                <ServiceType
+                  setServiceTypes={setServiceTypes}
+                  addServiceType={addServiceType}
+                />
                 <TypeTraining setTypeTrainings={setTypeTrainings} />
 
                 <AbonementCreate
@@ -81,6 +68,7 @@ function App() {
                   setAbonements={setAbonements}
                   serviceTypes={serviceTypes}
                   typeTrainings={typeTrainings}
+                  removeServiceType={removeServiceType}
                 />
 
                 <Abonement
