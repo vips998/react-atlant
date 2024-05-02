@@ -5,46 +5,46 @@ import { Button, Checkbox, Form, Input } from "antd";
 const LogIn = ({ user, setUser }) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const navigate = useNavigate();
+
   const logIn = async (formValues) => {
     console.log("Success:", formValues);
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: formValues.username,
+        email: formValues.email,
         password: formValues.password,
         rememberme: formValues.remember,
       }),
     };
     return await fetch("api/account/login", requestOptions)
-      .then((response) => {
-        // console.log(response.status)
-        response.status === 200 &&
-          setUser({ isAuthenticated: true, userName: "", userRole: "" });
-        return response.json();
-      })
-      .then(
-        (data) => {
-          console.log("Data:", data);
-          if (
-            typeof data !== "undefined" &&
-            typeof data.userName !== "undefined"
-          ) {
-            setUser({
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Data:", data);
+        if (data) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
               isAuthenticated: true,
               userName: data.userName,
               userRole: data.userRole,
-            });
-            navigate("/");
-          }
-          typeof data !== "undefined" &&
-            typeof data.error !== "undefined" &&
-            setErrorMessages(data.error);
-        },
-        (error) => {
-          console.log(error);
+            })
+          );
+          setUser({
+            isAuthenticated: true,
+            userName: data.userName,
+            userRole: data.userRole,
+            clientBalance: data.clientBalance,
+          });
+          navigate("/");
+        } else {
+          setErrorMessages(data.error || ["Authentication failed"]);
         }
-      );
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        setErrorMessages(["Network error or server is down"]);
+      });
   };
   const renderErrorMessage = () =>
     errorMessages.map((error, index) => <div key={index}>{error}</div>);
@@ -67,7 +67,7 @@ const LogIn = ({ user, setUser }) => {
           >
             <Form.Item
               label="Почта"
-              name="username"
+              name="email"
               rules={[
                 { required: true, message: "Please input your username!" },
               ]}

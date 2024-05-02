@@ -10,6 +10,7 @@ import Register from "./Components/Registration/Registration";
 import Shedule from "./Components/Shedule/Shedule";
 import TypeTraining from "./Components/TypeTraining/TypeTraining";
 import ServiceType from "./Components/ServiceType/ServiceType";
+//import Profile from "./Components/Profile/Profile";
 //import Coach from "./Components/Coach/Coach";
 //import DayWeek from "./Components/DayWeek/DayWeek";
 
@@ -23,6 +24,7 @@ function App() {
     id: "",
     userName: "",
     userRole: "",
+    balance: 0,
   });
   const [upAbonement, setUpAbonement] = useState({});
   const [schedules, setSchedules] = useState({});
@@ -37,6 +39,15 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout user={user} setUser={setUser} />}>
+          <Route
+            path="/"
+            // element={
+            //   <>
+            //     <Profile user={user} setUser={setUser} />
+            //   </>
+            // }
+          ></Route>
+
           <Route
             path="/Shedules"
             element={
@@ -61,18 +72,21 @@ function App() {
 
                 <AbonementCreate
                   user={user}
+                  setUser={setUser}
                   addAbonement={addAbonement}
                   upAbonement={upAbonement}
                   setUpAbonement={setUpAbonement}
                   abonements={abonements}
                   setAbonements={setAbonements}
                   serviceTypes={serviceTypes}
+                  setServiceTypes={setServiceTypes}
                   typeTrainings={typeTrainings}
                   removeServiceType={removeServiceType}
                 />
 
                 <Abonement
                   user={user}
+                  setUser={setUser}
                   addAbonement={addAbonement}
                   upAbonement={upAbonement}
                   setUpAbonement={setUpAbonement}

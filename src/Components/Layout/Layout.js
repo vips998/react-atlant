@@ -21,7 +21,7 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem(<Link to="/">Главная</Link>, "1", <HomeOutlined />),
+  getItem(<Link to="/">Профиль</Link>, "1", <HomeOutlined />),
   getItem(<Link to="/Shedules">Расписание</Link>, "2", <CalendarOutlined />),
   getItem("Клуб", "sub1", <TeamOutlined />, [
     getItem(<Link to="/">Залы</Link>, "3"),
@@ -39,7 +39,7 @@ const App = ({ user }) => {
       <Header style={{ position: "sticky", top: 0, zIndex: 1, width: "100%" }}>
         <Row>
           <Col
-            span={4}
+            flex="1 1 200px"
             style={{
               float: "right",
               color: "rgba(255, 255, 255, 0.65)",
@@ -48,8 +48,8 @@ const App = ({ user }) => {
           >
             АТЛАНТ - Фитнес клуб
           </Col>
-          <Col span={12}></Col>
-          <Col span={6}>
+          <Col flex="2 1 400px"></Col>
+          <Col flex="1 1 300px">
             <div
               style={{
                 float: "right",
@@ -59,8 +59,8 @@ const App = ({ user }) => {
               {user.isAuthenticated ? (
                 <>
                   <strong>
-                    {user.userRole === "user"
-                      ? `Баланс: 100 рублей ${user.userName}`
+                    {user.userRole === "client"
+                      ? `Баланс: ${user.clientBalance} рублей, ${user.userName}`
                       : user.userName}
                   </strong>
                 </>
@@ -72,7 +72,7 @@ const App = ({ user }) => {
             </div>
           </Col>
           <Col
-            span={2}
+            flex="0 1 100px"
             style={{
               float: "right",
               color: "rgba(255, 255, 255, 0.65)",

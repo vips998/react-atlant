@@ -10,6 +10,7 @@ const AbonementCreate = ({
   setUpAbonement,
   setAbonements,
   serviceTypes,
+  setServiceTypes,
   addServiceType,
   removeServiceType,
   typeTrainings,
@@ -94,9 +95,6 @@ const AbonementCreate = ({
       setIsModalOpen(true);
       updateAbonement();
     }
-    // setName(upGame.name);
-    // setDeveloper(upGame.developer);
-    // setMode(upGame.mode);
     console.log(11111);
   }, [upAbonement]);
 
@@ -120,10 +118,10 @@ const AbonementCreate = ({
     setUpAbonement({});
   };
 
-  const handleModalCloseAndRefresh = () => {
-    handleCancel(); // Закрыть модальное окно
-    //window.location.reload(); // Обновить страницу
-  };
+  //const handleModalCloseAndRefresh = () => {
+  //  handleCancel(); // Закрыть модальное окно
+  //  window.location.reload(); // Обновить страницу
+  //};
 
   const updateAbonement = () => {
     form.setFieldsValue({
@@ -176,7 +174,7 @@ const AbonementCreate = ({
       .then((data) => {
         console.log(data);
         setAbonements(abonements.map((x) => (x.id !== data.id ? x : data)));
-        setUpAbonement({});
+        setUpAbonement({}); // очищаю upAbonement
         handleOk();
         e.nameAbonement = "";
         e.costAbonement = "";
@@ -240,6 +238,7 @@ const AbonementCreate = ({
       );
     };
     createAbonement();
+    handleCancel();
   };
 
   //////////////////////////////////////////////////////////////////////////
@@ -277,6 +276,7 @@ const AbonementCreate = ({
       );
     };
     createServiceType();
+    handleTypeServiceCreateModalClose();
   };
 
   const deleteServiceType = async ({ id }) => {
@@ -287,6 +287,8 @@ const AbonementCreate = ({
       (response) => {
         if (response.ok) {
           removeServiceType(id);
+          setServiceTypes(serviceTypes.filter((x) => x.id !== id));
+          isTypeServiceModalOpen.reload;
         }
       },
       (error) => {
@@ -306,7 +308,6 @@ const AbonementCreate = ({
           <Modal
             title="Абонемент"
             open={isModalOpen}
-            onOk={handleOk}
             onCancel={handleCancel}
             footer={null}
           >
@@ -317,10 +318,7 @@ const AbonementCreate = ({
               initialValues={{
                 remember: true,
               }}
-              onFinish={(values) => {
-                handleSubmit(values);
-                handleModalCloseAndRefresh();
-              }}
+              onFinish={handleSubmit}
               form={form}
             >
               <Form.Item
@@ -640,8 +638,17 @@ const AbonementCreate = ({
                 ) : (
                   <Button
                     type="primary"
-                    htmlType="submit"
-                    onClick={AbonementUpdate}
+                    htmlType="button"
+                    onClick={() => {
+                      form
+                        .validateFields()
+                        .then((values) => {
+                          AbonementUpdate(values);
+                        })
+                        .catch((info) => {
+                          console.log("Validate Failed:", info);
+                        });
+                    }}
                   >
                     Изменить абонемент
                   </Button>

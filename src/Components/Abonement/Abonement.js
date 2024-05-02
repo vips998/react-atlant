@@ -37,6 +37,7 @@ const Abonement = ({
       (response) => {
         if (response.ok) {
           removeAbonement(id);
+          setAbonements(abonements.filter((x) => x.id !== id));
         }
       },
       (error) => {

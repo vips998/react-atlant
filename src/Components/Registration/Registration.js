@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {Button, Card, Typography, Input} from 'antd'
+import { Button, Card, Typography, Input } from "antd";
 
 const Register = ({ user, setUser }) => {
   const [errorMessages, setErrorMessages] = useState([]);
@@ -9,7 +9,15 @@ const Register = ({ user, setUser }) => {
   const Register = async (event) => {
     event.preventDefault();
 
-    var { nickname,fio, birthday, email, phoneNumber,  password, passwordConfirm } = document.forms[0];
+    var {
+      nickname,
+      fio,
+      birthday,
+      email,
+      phoneNumber,
+      password,
+      passwordConfirm,
+    } = document.forms[0];
     // console.log(email.value, password.value)
 
     const requestOptions = {
@@ -63,34 +71,40 @@ const Register = ({ user, setUser }) => {
         <>
           <h3>Регистрация</h3>
           <Card>
-          <form style={{width:500}} onSubmit={Register}>
-            <Typography>Никнейм </Typography>
-            <Input type="text" name="nickname" placeholder="Никнейм" />
-            <br />
-            <Typography>ФИО </Typography>
-            <Input type="text" name="fio" placeholder="ФИО" />
-            <br />
-            <Typography>Дата рождения </Typography>
-            <Input type="date" name="birthday" placeholder="Дата рождения" />
-            <br />
-            <Typography>Почта </Typography>
-            <Input type="text" name="email" placeholder="Почта" />
-            <br />
-            <Typography>Номер телефона </Typography>
-            <Input type="text" name="phoneNumber" placeholder="Номер телефона" />
-            <br />
-            <Typography>Пароль </Typography>
-            <Input type="text" name="password" placeholder="Пароль" />
-            <br />
-            <Typography>Подтверждение пароля </Typography>
-            <Input
-              type="text"
-              name="passwordConfirm"
-              placeholder="Подтверждение пароля"
-            />
-            <br />
-            <Button type="primary" htmlType="submit">Войти</Button>
-          </form>
+            <form style={{ width: 500 }} onSubmit={Register}>
+              <Typography>Никнейм </Typography>
+              <Input type="text" name="nickname" placeholder="Никнейм" />
+              <br />
+              <Typography>ФИО </Typography>
+              <Input type="text" name="fio" placeholder="ФИО" />
+              <br />
+              <Typography>Дата рождения </Typography>
+              <Input type="date" name="birthday" placeholder="Дата рождения" />
+              <br />
+              <Typography>Почта </Typography>
+              <Input type="text" name="email" placeholder="Почта" />
+              <br />
+              <Typography>Номер телефона </Typography>
+              <Input
+                type="text"
+                name="phoneNumber"
+                placeholder="Номер телефона"
+              />
+              <br />
+              <Typography>Пароль </Typography>
+              <Input type="text" name="password" placeholder="Пароль" />
+              <br />
+              <Typography>Подтверждение пароля </Typography>
+              <Input
+                type="text"
+                name="passwordConfirm"
+                placeholder="Подтверждение пароля"
+              />
+              <br />
+              <Button type="primary" htmlType="submit">
+                Войти
+              </Button>
+            </form>
           </Card>
           {renderErrorMessage()}
         </>
