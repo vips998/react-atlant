@@ -1,53 +1,60 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Typography, Input } from "antd";
+import { Button, Input, Form } from "antd";
 
 const Register = ({ user, setUser }) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const navigate = useNavigate();
 
-  const Register = async (event) => {
-    event.preventDefault();
-
-    var {
-      nickname,
-      fio,
-      birthday,
-      email,
-      phoneNumber,
-      password,
-      passwordConfirm,
-    } = document.forms[0];
-    // console.log(email.value, password.value)
+  const Register = async (formValues) => {
+    console.log("Success:", formValues);
 
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        nickname: nickname.value,
-        fio: fio.value,
-        birthday: birthday.value,
-        email: email.value,
-        phoneNumber: phoneNumber.value,
-        password: password.value,
-        passwordConfirm: passwordConfirm.value,
+        nickname: formValues.nickname,
+        fio: formValues.fio,
+        birthday: formValues.birthday,
+        email: formValues.email,
+        phoneNumber: formValues.phoneNumber,
+        password: formValues.password,
+        passwordConfirm: formValues.passwordConfirm,
       }),
     };
     return await fetch("api/account/register", requestOptions)
       .then((response) => {
         // console.log(response.status)
         response.status === 200 &&
-          setUser({ isAuthenticated: true, userName: "", userRole: "" });
+          setUser({
+            isAuthenticated: true,
+            userName: formValues.email,
+            fio: formValues.fio,
+            birthday: formValues.birthday,
+            email: formValues.email,
+            phoneNumber: formValues.phoneNumber,
+            password: formValues.password,
+          });
         return response.json();
       })
       .then(
         (data) => {
-          console.log("Data:", data);
           if (
             typeof data !== "undefined" &&
             typeof data.userName !== "undefined"
           ) {
-            setUser({ isAuthenticated: true, userName: "", userRole: "" });
+            console.log("Пользователь: ", user);
+            setUser({
+              isAuthenticated: true,
+              id: data.id,
+              userName: data.userName,
+              userRole: data.userRole,
+              fio: data.fio,
+              birthday: data.birthday,
+              phonenumber: data.phonenumber,
+              email: data.email,
+              clientBalance: data.clientBalance,
+            });
             navigate("/");
           }
           typeof data !== "undefined" &&
@@ -70,47 +77,99 @@ const Register = ({ user, setUser }) => {
       ) : (
         <>
           <h3>Регистрация</h3>
-          <Card>
-            <form style={{ width: 500 }} onSubmit={Register}>
-              <Typography>Никнейм </Typography>
-              <Input type="text" name="nickname" placeholder="Никнейм" />
-              <br />
-              <Typography>ФИО </Typography>
-              <Input type="text" name="fio" placeholder="ФИО" />
-              <br />
-              <Typography>Дата рождения </Typography>
-              <Input type="date" name="birthday" placeholder="Дата рождения" />
-              <br />
-              <Typography>Почта </Typography>
-              <Input type="text" name="email" placeholder="Почта" />
-              <br />
-              <Typography>Номер телефона </Typography>
-              <Input
-                type="text"
-                name="phoneNumber"
-                placeholder="Номер телефона"
-              />
-              <br />
-              <Typography>Пароль </Typography>
-              <Input type="text" name="password" placeholder="Пароль" />
-              <br />
-              <Typography>Подтверждение пароля </Typography>
-              <Input
-                type="text"
-                name="passwordConfirm"
-                placeholder="Подтверждение пароля"
-              />
-              <br />
+          <Form
+            onFinish={Register}
+            name="basic"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 600 }}
+            initialValues={{ remember: true }}
+            onFinishFailed={renderErrorMessage}
+            autoComplete="off"
+          >
+            <Form.Item
+              label="Никнейм: "
+              name="nickname"
+              rules={[
+                { required: true, message: "Пожалуйста, введите никнейм!" },
+              ]}
+            >
+              <Input placeholder="Например: UserISPU" />
+            </Form.Item>
+
+            <Form.Item
+              label="ФИО: "
+              name="fio"
+              rules={[
+                { required: true, message: "Пожалуйста, введите ваше ФИО!" },
+              ]}
+            >
+              <Input placeholder="Например: Иванов Иван Иванович" />
+            </Form.Item>
+            <Form.Item
+              label="Дата рождения: "
+              name="birthday"
+              rules={[
+                {
+                  required: true,
+                  message: "Пожалуйста, введите дату рождения!",
+                },
+              ]}
+            >
+              <Input type="date" />
+            </Form.Item>
+
+            <Form.Item
+              label="Почта: "
+              name="email"
+              rules={[
+                { required: true, message: "Пожалуйста, введите почту!" },
+              ]}
+            >
+              <Input placeholder="Например: user@mail.com" />
+            </Form.Item>
+            <Form.Item
+              label="Номер телефона: "
+              name="phoneNumber"
+              rules={[
+                {
+                  required: true,
+                  message: "Пожалуйста, введите номер телефона!",
+                },
+              ]}
+            >
+              <Input placeholder="Например: 89123456789" />
+            </Form.Item>
+
+            <Form.Item
+              label="Пароль: "
+              name="password"
+              rules={[
+                { required: true, message: "Пожалуйста, введите пароль!" },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              label="Подтверждение пароля: "
+              name="passwordConfirm"
+              rules={[
+                { required: true, message: "Пожалуйста, подтвердите пароль!" },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item>
               <Button type="primary" htmlType="submit">
-                Войти
+                {" "}
+                Зарегистрироваться{" "}
               </Button>
-            </form>
-          </Card>
-          {renderErrorMessage()}
+            </Form.Item>
+          </Form>
         </>
       )}
     </>
   );
 };
-
 export default Register;

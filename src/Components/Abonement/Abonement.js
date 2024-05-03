@@ -89,6 +89,16 @@ const Abonement = ({
                 Услуга: {typeService} <br />
                 Тип тренировки: {typeTraining} <br />
                 <br />
+                {user.isAuthenticated == true && user.userRole == "client" ? (
+                  <Button
+                    type="primary"
+                    //onClick={() => ({ id })}
+                  >
+                    Купить
+                  </Button>
+                ) : (
+                  ""
+                )}
                 {user.isAuthenticated == true && user.userRole == "admin" ? (
                   <Card>
                     <Button

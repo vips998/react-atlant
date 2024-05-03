@@ -14,36 +14,38 @@ const LogIn = ({ user, setUser }) => {
       body: JSON.stringify({
         email: formValues.email,
         password: formValues.password,
-        rememberme: formValues.remember,
+        rememberMe: formValues.remember,
       }),
     };
     return await fetch("api/account/login", requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Data:", data);
-        if (data) {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              isAuthenticated: true,
-              userName: data.userName,
-              userRole: data.userRole,
-            })
-          );
+      .then((response) => {
+        return response
+          .json()
+          .then((data) => ({ status: response.status, body: data }));
+      })
+      .then(({ status, body }) => {
+        console.log(body);
+        if (status === 200) {
+          localStorage.setItem("jwt", body.token); // Сохраняем JWT в localStorage
           setUser({
             isAuthenticated: true,
-            userName: data.userName,
-            userRole: data.userRole,
-            clientBalance: data.clientBalance,
+            id: body.id,
+            userName: body.userName,
+            userRole: body.userRole,
+            fio: body.fio,
+            birthday: body.birthday,
+            phonenumber: body.phonenumber,
+            email: body.email,
+            clientBalance: body.clientBalance,
           });
           navigate("/");
-        } else {
-          setErrorMessages(data.error || ["Authentication failed"]);
+        } else if (body.error) {
+          setErrorMessages(body.error);
         }
       })
       .catch((error) => {
-        console.error("Login error:", error);
-        setErrorMessages(["Network error or server is down"]);
+        console.error("Ошибка входа:", error);
+        setErrorMessages(["Ошибка сервера. Попробуйте позже."]);
       });
   };
   const renderErrorMessage = () =>

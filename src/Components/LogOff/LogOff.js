@@ -22,7 +22,7 @@ const LogOff = ({ setUser }) => {
         if (response.status === 200) {
           setUser({ isAuthenticated: false, userName: "", userRole: "" });
           // Очищаем данные пользователя из localStorage
-          localStorage.removeItem("user");
+          localStorage.removeItem("jwt");
           navigate("/");
         } else if (response.status === 401) {
           navigate("/login");

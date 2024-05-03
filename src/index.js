@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import Abonement from "./Components/Abonement/Abonement";
 import AbonementCreate from "./Components/AbonementCreate/AbonementCreate";
@@ -10,7 +10,8 @@ import Register from "./Components/Registration/Registration";
 import Shedule from "./Components/Shedule/Shedule";
 import TypeTraining from "./Components/TypeTraining/TypeTraining";
 import ServiceType from "./Components/ServiceType/ServiceType";
-//import Profile from "./Components/Profile/Profile";
+import Profile from "./Components/Profile/Profile";
+import { jwtDecode } from "jwt-decode";
 //import Coach from "./Components/Coach/Coach";
 //import DayWeek from "./Components/DayWeek/DayWeek";
 
@@ -35,17 +36,44 @@ function App() {
     setServiceTypes(serviceTypes.filter(({ Id }) => Id !== removeID));
   const [typeTrainings, setTypeTrainings] = useState([]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      // Decode the token to get user information
+      const decodedToken = jwtDecode(token);
+      // Check if the token is expired
+      const currentTime = Date.now() / 1000;
+      if (decodedToken.exp < currentTime) {
+        // Token is expired. Remove it and reset the user state.
+        localStorage.removeItem("jwt");
+      } else {
+        // Token is valid. Set the user state using the information from the token.
+        setUser({
+          isAuthenticated: true,
+          id: decodedToken.id,
+          userName: decodedToken.userName,
+          userRole: decodedToken.userRole,
+          fio: decodedToken.fio,
+          birthday: decodedToken.birthday,
+          phonenumber: decodedToken.phonenumber,
+          email: decodedToken.email,
+          clientBalance: parseFloat(decodedToken.clientBalance),
+        });
+      }
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout user={user} setUser={setUser} />}>
           <Route
             path="/"
-            // element={
-            //   <>
-            //     <Profile user={user} setUser={setUser} />
-            //   </>
-            // }
+            element={
+              <>
+                <Profile user={user} setUser={setUser} />
+              </>
+            }
           ></Route>
 
           <Route
