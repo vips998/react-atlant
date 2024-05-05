@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Style.css";
-import { Button, Card, Typography } from "antd";
+import { Button, Card, Typography, Modal, Space } from "antd";
 //import { Link } from "react-router-dom";
 const Abonement = ({
   user,
@@ -9,6 +9,9 @@ const Abonement = ({
   setUpAbonement,
   removeAbonement,
 }) => {
+  const [isModalAbonementVisible, setIsModalAbonementVisible] = useState(false);
+  const [selectedAbonement, setSelectedAbonement] = useState({});
+
   useEffect(() => {
     const getAbonements = async () => {
       const requestOptions = {
@@ -59,6 +62,62 @@ const Abonement = ({
       });
   };
 
+  const showModalAbonement = async ({ id }) => {
+    const requestOptions = {
+      method: "GET",
+    };
+    return await fetch(`api/Abonements/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setSelectedAbonement(data);
+        setIsModalAbonementVisible(true);
+      });
+  };
+
+  const handleOkAbonement = async () => {
+    try {
+      const clientId = user.id;
+      const abonementId = selectedAbonement.id;
+
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isValid: true, // абонемент действителен
+          countRemainTraining: selectedAbonement.countVisits, // количество оставшихся тренировок
+          dateStart: new Date().toISOString().slice(0, 10),
+          dateEnd: new Date(
+            new Date().getTime() +
+              selectedAbonement.countDays * 24 * 60 * 60 * 1000
+          )
+            .toISOString()
+            .slice(0, 10),
+        }),
+      };
+
+      const response = await fetch(
+        `/api/Payments?clientId=${clientId}&abonementId=${abonementId}`,
+        requestOptions
+      );
+
+      if (response.ok) {
+        console.log("Оплата успешно проведена");
+        setIsModalAbonementVisible(false);
+      } else {
+        console.error("Ошибка проведения оплаты:", response.status);
+      }
+    } catch (error) {
+      console.error("Ошибка оплаты:", error);
+    }
+  };
+
+  const handleCancelAbonement = () => {
+    setIsModalAbonementVisible(false);
+  };
+
   return (
     <React.Fragment>
       <Typography>
@@ -72,7 +131,6 @@ const Abonement = ({
             cost,
             countVisits,
             countDays,
-            countMonths,
             typeService,
             typeTraining,
           }) => (
@@ -85,14 +143,13 @@ const Abonement = ({
                 Стоимость: {cost} Рублей <br />
                 Количество посещений: {countVisits} <br />
                 Количество дней: {countDays} <br />
-                Количество месяцев: {countMonths} <br />
                 Услуга: {typeService} <br />
                 Тип тренировки: {typeTraining} <br />
                 <br />
                 {user.isAuthenticated == true && user.userRole == "client" ? (
                   <Button
                     type="primary"
-                    //onClick={() => ({ id })}
+                    onClick={() => showModalAbonement({ id })}
                   >
                     Купить
                   </Button>
@@ -124,6 +181,48 @@ const Abonement = ({
           )
         )}
       </Card>
+      <Modal
+        title={selectedAbonement.name}
+        visible={isModalAbonementVisible}
+        onCancel={handleCancelAbonement}
+        footer={null}
+      >
+        <div>
+          <h3>Подробная информация об абонементе</h3>
+          <ul>
+            <li>Количество посещений: {selectedAbonement.countVisits}</li>
+            <li>Количество дней: {selectedAbonement.countDays}</li>
+            <li>Доступный вид спорта: {selectedAbonement.typeService}</li>
+            <li>Тип тренировки: {selectedAbonement.typeTraining}</li>
+            <li>Стоимость абонемента: {selectedAbonement.cost} рублей</li>
+          </ul>
+        </div>
+        <Space>
+          <Button
+            onClick={handleCancelAbonement}
+            style={{
+              position: "absolute",
+              bottom: 20,
+              left: 20,
+            }}
+            type="default"
+          >
+            Отменить
+          </Button>
+          <Button
+            onClick={handleOkAbonement}
+            style={{
+              position: "absolute",
+              bottom: 20,
+              right: 20,
+            }}
+            type="primary"
+            htmlType="submit"
+          >
+            Подтвердить покупку
+          </Button>
+        </Space>
+      </Modal>
     </React.Fragment>
   );
 };

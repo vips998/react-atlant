@@ -104,7 +104,6 @@ const AbonementCreate = ({
       cost: "",
       countVisits: "",
       countDays: "",
-      countMonths: "",
       typeService: "",
       typeTraining: "",
     });
@@ -130,7 +129,6 @@ const AbonementCreate = ({
       costAbonement: upAbonement.cost,
       countVisitsAbonement: upAbonement.countVisits,
       countDaysAbonement: upAbonement.countDays,
-      countMonthsAbonement: upAbonement.countMonths,
       typeServiceAbonement: upAbonement.typeService,
       typeTrainingAbonement: upAbonement.typeTraining,
     });
@@ -145,7 +143,6 @@ const AbonementCreate = ({
     const valueCost = e.costAbonement;
     const valueCountVisit = e.countVisitsAbonement;
     const valueCountDays = e.countDaysAbonement;
-    const valueCountMonths = e.countMonthsAbonement;
     const valueTypeService = e.typeServiceAbonement;
     const valueTypeTraining = e.typeTrainingAbonement;
 
@@ -155,7 +152,6 @@ const AbonementCreate = ({
       cost: Number(valueCost),
       countVisits: Number(valueCountVisit),
       countDays: Number(valueCountDays),
-      countMonths: Number(valueCountMonths),
       typeService: valueTypeService,
       typeTraining: valueTypeTraining,
     };
@@ -180,7 +176,6 @@ const AbonementCreate = ({
         e.costAbonement = "";
         e.countVisitsAbonement = "";
         e.countDaysAbonement = "";
-        e.countMonthsAbonement = "";
         e.typeServiceAbonement = "";
         e.typeTrainingAbonement = "";
       });
@@ -192,7 +187,6 @@ const AbonementCreate = ({
     const valueCost = e.costAbonement;
     const valueCountVisit = e.countVisitsAbonement;
     const valueCountDays = e.countDaysAbonement;
-    const valueCountMonths = e.countMonthsAbonement;
     const valueTypeService = e.typeServiceAbonement;
     const valueTypeTraining = e.typeTrainingAbonement;
 
@@ -201,7 +195,6 @@ const AbonementCreate = ({
       cost: Number(valueCost),
       countVisits: Number(valueCountVisit),
       countDays: Number(valueCountDays),
-      countMonths: Number(valueCountMonths),
       typeService: valueTypeService,
       typeTraining: valueTypeTraining,
     };
@@ -228,7 +221,6 @@ const AbonementCreate = ({
             e.costAbonement = "";
             e.countVisitsAbonement = "";
             e.countDaysAbonement = "";
-            e.countMonthsAbonement = "";
             e.typeServiceAbonement = "";
             e.typeTrainingAbonement = "";
           }
@@ -369,17 +361,6 @@ const AbonementCreate = ({
                 ]}
               >
                 <Input placeholder="Количество дней" />
-              </Form.Item>
-              <Form.Item
-                label="Количество месяцев: "
-                name="countMonthsAbonement"
-                rules={[
-                  {
-                    required: false,
-                  },
-                ]}
-              >
-                <Input placeholder="Количество месяцев" />
               </Form.Item>
 
               <Form.Item label="Услуга: " name="typeServiceAbonement">

@@ -11,6 +11,7 @@ const LogOff = ({ setUser }) => {
   };
   useEffect(() => {
     showModal();
+    localStorage.removeItem("jwt");
   }, []);
   const logOff = async (event) => {
     event.preventDefault();

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Col, Row, Button, Modal, Form, Input } from "antd";
+import React, { useState, useEffect } from "react";
+import { Col, Row, Button, Modal, Form, Input, Card, List } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 const Profile = ({ user, setUser }) => {
-  const formattedDate = new Date(user.birthday).toLocaleDateString("en-US", {
+  const formattedDate = new Date(user.birthday).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "numeric",
     year: "numeric",
@@ -10,6 +10,33 @@ const Profile = ({ user, setUser }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [balance, setBalance] = useState(user.clientBalance);
+  const [paymentAbonements, setPaymentAbonements] = useState([]);
+
+  useEffect(() => {
+    const getPaymentsAbonements = async () => {
+      try {
+        const response = await fetch(`/api/Payments/client/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPaymentAbonements(data);
+          console.log("Купленные абонементы" + data);
+        } else {
+          console.error(
+            "Ошибка при получении списка абонементов:",
+            response.status
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Ошибка при получении списка купленных абонементов:",
+          error
+        );
+      }
+    };
+    getPaymentsAbonements();
+  }, [user.id]);
+
+  console.log(paymentAbonements);
 
   const updateBalance = async () => {
     const newBalance = user.clientBalance + parseFloat(balance);
@@ -60,47 +87,135 @@ const Profile = ({ user, setUser }) => {
         <>
           <Row>
             <Col span={12} style={{ fontSize: "large" }}>
-              <div style={{ textAlign: "center", marginTop: "5%" }}>
-                <UserOutlined style={{ fontSize: "200px" }} />
-                <br />
-                <h1>Вы: {user.userRole}</h1>
-              </div>
+              <Card
+                style={{
+                  textAlign: "center",
+                  marginTop: "5%",
+                  height: "300px",
+                  margin: "8px",
+                }}
+              >
+                <div>
+                  <UserOutlined style={{ fontSize: "200px" }} />
+                  <br />
+                  <h1>Вы: {user.userRole}</h1>
+                </div>
+              </Card>
             </Col>
 
-            <Col span={12} style={{ fontSize: "large", marginTop: "2%" }}>
-              <div>
-                <h1>Данные пользователя</h1>
-                <div className="ant-space-item"> Никнейм: {user.userName} </div>
-                <div className="ant-space-item"> ФИО: {user.fio} </div>
-                <div className="ant-space-item">
-                  {" "}
-                  Дата рождения: {formattedDate}{" "}
+            <Col span={12} style={{ fontSize: "large" }}>
+              <Card style={{ marginTop: "5%", height: "300px", margin: "8px" }}>
+                <div>
+                  <h1>Данные пользователя</h1>
+                  <div className="ant-space-item">
+                    {" "}
+                    Никнейм: {user.userName}{" "}
+                  </div>
+                  <div className="ant-space-item"> ФИО: {user.fio} </div>
+                  <div className="ant-space-item">
+                    {" "}
+                    Дата рождения: {formattedDate}{" "}
+                  </div>
+                  <div className="ant-space-item"> Почта: {user.email} </div>
+                  <div className="ant-space-item">
+                    {" "}
+                    Телефон: {user.phonenumber}{" "}
+                  </div>
+                  {user.userRole != "admin" && user.userRole != "coach" ? (
+                    <>
+                      <div className="ant-space-item">
+                        {" "}
+                        Баланс: {user.clientBalance}
+                        {" рублей"}
+                      </div>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        onClick={showModal}
+                      >
+                        Пополнить баланс
+                      </Button>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
-                <div className="ant-space-item"> Почта: {user.email} </div>
-                <div className="ant-space-item">
-                  {" "}
-                  Телефон: {user.phonenumber}{" "}
-                </div>
-                {user.userRole != "admin" && user.userRole != "coach" ? (
-                  <>
-                    <div className="ant-space-item">
-                      {" "}
-                      Баланс: {user.clientBalance}
-                      {" рублей"}
-                    </div>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      onClick={showModal}
-                    >
-                      Пополнить баланс
-                    </Button>
-                  </>
-                ) : (
-                  ""
-                )}
-              </div>
+              </Card>
             </Col>
+            {user.userRole != "admin" && user.userRole != "coach" ? (
+              <Col span={24}>
+                <Card
+                  title={"Купленные абонементы:"}
+                  bordered={false}
+                  style={{ margin: "8px" }}
+                >
+                  <List
+                    dataSource={paymentAbonements}
+                    renderItem={(item) => {
+                      return (
+                        <List.Item>
+                          <Card
+                            style={{
+                              width: "100%",
+                              marginTop: "12px",
+                              padding: "12px",
+                              borderRadius: "8px",
+                              boxShadow:
+                                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                              backgroundColor: item.isValid
+                                ? "#C0F400"
+                                : "#FF9640",
+                            }}
+                          >
+                            <h2>{item.abonement.name}</h2>
+                            <div>
+                              Дата начала:{" "}
+                              {new Date(item.dateStart).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "numeric",
+                                  month: "numeric",
+                                  year: "numeric",
+                                }
+                              )}
+                            </div>
+                            <div>
+                              Дата окончания:{" "}
+                              {new Date(item.dateEnd).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "numeric",
+                                  month: "numeric",
+                                  year: "numeric",
+                                }
+                              )}
+                            </div>
+                            <div>
+                              Осталось тренировок: {item.countRemainTraining}
+                            </div>
+                            <div>
+                              Тип тренировки: {item.abonement.typeTraining}
+                            </div>
+                            <div>Тип услуги: {item.abonement.typeService}</div>
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "12px",
+                                right: "12px",
+                              }}
+                            >
+                              {item.isValid ? "Действителен" : "Недействителен"}
+                            </div>
+                          </Card>
+                        </List.Item>
+                      );
+                    }}
+                  />
+                </Card>
+              </Col>
+            ) : (
+              ""
+            )}
           </Row>
           <Modal
             title="Пополнение баланса"

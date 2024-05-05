@@ -4,9 +4,22 @@ import "./Style.css";
 
 const Schedule = ({ schedules, setSchedules }) => {
   const [highlightedCells, setHighlightedCells] = useState([]);
-
+  const [weekDays, setWeekDays] = useState([]);
   useEffect(() => {
-    const getSchedules = async () => {
+    // Получение дней недели
+    const fetchWeekDays = async () => {
+      const response = await fetch("api/DayWeeks/");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setWeekDays(data.map((day) => day.day));
+      console.log(data);
+      console.log(weekDays);
+    };
+
+    // Получение тренировок из шаблона
+    const fetchSchedules = async () => {
       const requestOptions = {
         method: "GET",
       };
@@ -27,7 +40,9 @@ const Schedule = ({ schedules, setSchedules }) => {
           }
         );
     };
-    getSchedules();
+
+    fetchWeekDays();
+    fetchSchedules();
   }, [setSchedules]);
 
   const handleMouseEnter = (schedule) => {
