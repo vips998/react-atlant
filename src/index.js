@@ -29,6 +29,7 @@ function App() {
   });
   const [upAbonement, setUpAbonement] = useState({});
   const [schedules, setSchedules] = useState({});
+  const [weekDays, setWeekDays] = useState({});
   const [serviceTypes, setServiceTypes] = useState([]);
   const addServiceType = (serviceType) =>
     setServiceTypes([...serviceTypes, serviceType]);
@@ -84,7 +85,12 @@ function App() {
                 {/*<TypeTraining />*/}
                 {/*<ServiceType />*/}
                 {/*<DayWeek />*/}
-                <Shedule schedules={schedules} setSchedules={setSchedules} />
+                <Shedule
+                  schedules={schedules}
+                  setSchedules={setSchedules}
+                  weekDays={weekDays}
+                  setWeekDays={setWeekDays}
+                />
               </>
             }
           />

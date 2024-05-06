@@ -2,22 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Table, Typography, Button } from "antd";
 import "./Style.css";
 
-const Schedule = ({ schedules, setSchedules }) => {
+const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
   const [highlightedCells, setHighlightedCells] = useState([]);
-  const [weekDays, setWeekDays] = useState([]);
   useEffect(() => {
-    // Получение дней недели
-    const fetchWeekDays = async () => {
-      const response = await fetch("api/DayWeeks/");
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setWeekDays(data.map((day) => day.day));
-      console.log(data);
-      console.log(weekDays);
-    };
-
     // Получение тренировок из шаблона
     const fetchSchedules = async () => {
       const requestOptions = {
@@ -40,10 +27,34 @@ const Schedule = ({ schedules, setSchedules }) => {
           }
         );
     };
-
-    fetchWeekDays();
     fetchSchedules();
   }, [setSchedules]);
+
+  useEffect(() => {
+    // Получение тренировок из шаблона
+    const fetchDayWeeks = async () => {
+      const requestOptions = {
+        method: "GET",
+      };
+      return await fetch("api/DayWeeks/", requestOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(
+          (data) => {
+            console.log("Data:", data);
+            setWeekDays(data);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+    };
+    fetchDayWeeks();
+  }, [setWeekDays]);
 
   const handleMouseEnter = (schedule) => {
     if (schedule) {
@@ -79,10 +90,10 @@ const Schedule = ({ schedules, setSchedules }) => {
       const timeSlot = `${hour}:00 - ${hour + 1}:00`;
       const row = {
         time: timeSlot,
-        ...Array.from(new Set(schedules.map((s) => s.dayWeek.day))).reduce(
+        ...Array.from(weekDays).reduce(
           (acc, day) => ({
             ...acc,
-            [day]: { list: [], rowSpan: 1 }, // rowSpan должен быть как минимум 1, чтобы отображать пустые ячейки
+            [day.day]: { list: [], rowSpan: 1 },
           }),
           {}
         ),
@@ -103,16 +114,18 @@ const Schedule = ({ schedules, setSchedules }) => {
         const timeSlot = `${hour}:00 - ${hour + 1}:00`;
         let row = tableData.find((r) => r.time === timeSlot);
 
-        if (hour === hourStart) {
+        if (hour === hourStart && row[scheduleDay]) {
           // Начало тренировки
           row[scheduleDay].list.push(schedule);
           row[scheduleDay].rowSpan = duration;
         } else {
           // Продолжение тренировки
-          if (!row[scheduleDay].list.includes(schedule)) {
-            row[scheduleDay].list.push(schedule);
+          if (row[scheduleDay] && row[scheduleDay].list) {
+            if (!row[scheduleDay].list.includes(schedule)) {
+              row[scheduleDay].list.push(schedule);
+            }
+            row[scheduleDay].rowSpan = 0; // Скрыть ячейку, так как она будет объединена с предыдущей
           }
-          row[scheduleDay].rowSpan = 0; // Скрыть ячейку, так как она будет объединена с предыдущей
         }
       }
     });
@@ -133,65 +146,77 @@ const Schedule = ({ schedules, setSchedules }) => {
           : "",
       }),
     },
-    ...Array.from(
-      new Set(schedules.map((schedule) => schedule.dayWeek.day))
-    ).map((day) => ({
-      title: day,
-      key: day,
+    ...weekDays.map((day) => ({
+      title: day.day,
+      key: day.day,
+      dataIndex: day.day,
       render: (text, record) => {
-        const cellData = record[day];
-        if (cellData && cellData.rowSpan > 0) {
+        const cellData = record[day.day];
+        if (cellData) {
+          if (cellData.rowSpan > 0) {
+            return {
+              children: (
+                <div
+                  onMouseEnter={() => handleMouseEnter(cellData.list[0])}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  {cellData.list.map((event) => (
+                    <div key={event.id}>
+                      <p>{event.serviceType.nameService}</p>
+                      <p>{event.typeTraining.nameType}</p>
+                      <p>{event.maxCount} человек</p>
+                      <p>{event.coach.user.fio}</p>
+                      <Button type="primary" onClick={() => handleEdit(event)}>
+                        Изменить
+                      </Button>
+                      <Button
+                        style={{ marginLeft: "20px" }}
+                        type="primary"
+                        danger
+                        onClick={() => handleDelete(event)}
+                      >
+                        Удалить
+                      </Button>
+                    </div>
+                  ))}
+                  {cellData.list.length === 0 && (
+                    <Button
+                      type="primary"
+                      onClick={() => handleAdd(day, record.time)}
+                    >
+                      +
+                    </Button>
+                  )}
+                </div>
+              ),
+              props: {
+                rowSpan: cellData.rowSpan,
+                style: {
+                  backgroundColor:
+                    cellData.list.length > 0 ? "#add8e6" : "none",
+                },
+              },
+            };
+          }
           return {
             children: (
-              <div
-                onMouseEnter={() => handleMouseEnter(cellData.list[0])} // Предполагаем, что list содержит объекты тренировок
-                onMouseLeave={handleMouseLeave}
+              <Button
+                type="primary"
+                onClick={() => handleAdd(day, record.time)}
               >
-                {cellData.list.map((event) => (
-                  <div key={event.id}>
-                    <p>{event.serviceType.nameService}</p>
-                    <p>{event.typeTraining.nameType}</p>
-                    <p>{event.maxCount} человек</p>
-                    <p>{event.coach.user.fio}</p>
-                    <Button type="primary" onClick={() => handleEdit(event)}>
-                      Изменить
-                    </Button>
-                    <Button
-                      style={{ marginLeft: "20px" }}
-                      type="primary"
-                      danger
-                      onClick={() => handleDelete(event)}
-                    >
-                      Удалить
-                    </Button>
-                  </div>
-                ))}
-                {cellData.list.length === 0 && (
-                  <Button
-                    type="primary"
-                    onClick={() => handleAdd(day, record.time)}
-                  >
-                    +
-                  </Button>
-                )}
-              </div>
+                +
+              </Button>
             ),
             props: {
               rowSpan: cellData.rowSpan,
-              style: {
-                backgroundColor: cellData.list.length > 0 ? "#add8e6" : "none",
-              },
+              style: { backgroundColor: "none" },
             },
           };
         }
         return {
-          children: (
-            <Button type="primary" onClick={() => handleAdd(day, record.time)}>
-              +
-            </Button>
-          ),
+          children: null,
           props: {
-            rowSpan: cellData.rowSpan,
+            rowSpan: 0,
             style: { backgroundColor: "none" },
           },
         };
@@ -221,8 +246,8 @@ const Schedule = ({ schedules, setSchedules }) => {
       </Typography>
 
       <Table
-        columns={columns}
         dataSource={tableData}
+        columns={columns}
         pagination={false}
         bordered
       />
