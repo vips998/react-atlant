@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 
-export let dayWeek = [{}];
-
-const DayWeek = () => {
+const DayWeek = ({ setWeekDays }) => {
   useEffect(() => {
     const getDayWeeks = async () => {
       const requestOptions = {
@@ -13,7 +11,7 @@ const DayWeek = () => {
         .then(
           (data) => {
             console.log("Data:", data);
-            dayWeek = data;
+            setWeekDays(data);
           },
           (error) => {
             console.log(error);
@@ -21,6 +19,6 @@ const DayWeek = () => {
         );
     };
     getDayWeeks();
-  });
+  }, [setWeekDays]);
 };
 export default DayWeek;

@@ -1,60 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { Table, Typography, Button } from "antd";
+import React, { useState } from "react";
+import {
+  Table,
+  Typography,
+  Button,
+  Modal,
+  Form,
+  Select,
+  Input,
+  TimePicker,
+  Flex,
+  Spin,
+} from "antd";
 import "./Style.css";
-
-const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
+import dayjs from "dayjs";
+import moment from "moment";
+const { Option } = Select;
+const format = "HH:mm";
+const Schedule = ({
+  user,
+  schedules,
+  addSchedule,
+  removeSchedule,
+  setSchedules,
+  weekDays,
+  serviceTypes,
+  typeTrainings,
+  coachs,
+  users,
+}) => {
   const [highlightedCells, setHighlightedCells] = useState([]);
-  useEffect(() => {
-    // Получение тренировок из шаблона
-    const fetchSchedules = async () => {
-      const requestOptions = {
-        method: "GET",
-      };
-      return await fetch("api/Shedules/", requestOptions)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then(
-          (data) => {
-            console.log("Data:", data);
-            setSchedules(data);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-    fetchSchedules();
-  }, [setSchedules]);
+  const [visible, setVisible] = useState(false);
+  const [form] = Form.useForm();
+  // Для функции обновления и добавления тренировки
+  const [isEditing, setIsEditing] = useState(false);
+  const modalTitle = isEditing ? "Изменить тренировку" : "Добавить тренировку";
 
-  useEffect(() => {
-    // Получение тренировок из шаблона
-    const fetchDayWeeks = async () => {
-      const requestOptions = {
-        method: "GET",
-      };
-      return await fetch("api/DayWeeks/", requestOptions)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then(
-          (data) => {
-            console.log("Data:", data);
-            setWeekDays(data);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-    fetchDayWeeks();
-  }, [setWeekDays]);
+  const contentStyle = {
+    padding: 50,
+    background: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 4,
+  };
+  const content = <div style={contentStyle} />;
+
+  if (
+    !Array.isArray(weekDays) ||
+    weekDays.length === 0 ||
+    !Array.isArray(schedules) ||
+    !Array.isArray(coachs) ||
+    !Array.isArray(users) ||
+    !Array.isArray(typeTrainings) ||
+    !Array.isArray(serviceTypes)
+  ) {
+    return (
+      <Flex gap="small" vertical>
+        <Flex gap="small">
+          <Spin tip="Loading" size="large">
+            {content}
+          </Spin>
+        </Flex>
+      </Flex>
+    );
+  }
 
   const handleMouseEnter = (schedule) => {
     if (schedule) {
@@ -75,10 +81,6 @@ const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
   const handleMouseLeave = () => {
     setHighlightedCells([]);
   };
-
-  if (!Array.isArray(schedules)) {
-    return <div>Loading...</div>;
-  }
 
   const generateTableData = () => {
     const startTime = 8; // Начальное время
@@ -157,36 +159,76 @@ const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
             return {
               children: (
                 <div
+                  className="table-cell-content"
                   onMouseEnter={() => handleMouseEnter(cellData.list[0])}
                   onMouseLeave={handleMouseLeave}
                 >
                   {cellData.list.map((event) => (
                     <div key={event.id}>
-                      <p>{event.serviceType.nameService}</p>
-                      <p>{event.typeTraining.nameType}</p>
+                      <p>
+                        {
+                          serviceTypes.find(
+                            (type) => type.id === event.serviceTypeId
+                          )?.nameService
+                        }
+                      </p>
+                      <p>
+                        {
+                          typeTrainings.find(
+                            (type) => type.id === event.typeTrainingId
+                          )?.nameType
+                        }
+                      </p>
                       <p>{event.maxCount} человек</p>
-                      <p>{event.coach.user.fio}</p>
-                      <Button type="primary" onClick={() => handleEdit(event)}>
-                        Изменить
-                      </Button>
-                      <Button
-                        style={{ marginLeft: "20px" }}
-                        type="primary"
-                        danger
-                        onClick={() => handleDelete(event)}
-                      >
-                        Удалить
-                      </Button>
+                      <p>
+                        {" "}
+                        Тренер:
+                        {
+                          users.find(
+                            (user) =>
+                              user.id ===
+                              coachs.find(
+                                (coach) => coach.userId === event.coachId
+                              )?.userId
+                          )?.fio
+                        }
+                      </p>
+                      {user.isAuthenticated == true &&
+                      user.userRole == "admin" ? (
+                        <div className="button-container">
+                          <Button
+                            className="edit-button"
+                            type="primary"
+                            onClick={() => handleEdit(event, record.time)}
+                          >
+                            Изменить
+                          </Button>
+                          <Button
+                            className="delete-button"
+                            type="primary"
+                            danger
+                            onClick={() => handleDelete(event)}
+                          >
+                            Удалить
+                          </Button>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   ))}
-                  {cellData.list.length === 0 && (
-                    <Button
-                      type="primary"
-                      onClick={() => handleAdd(day, record.time)}
-                    >
-                      +
-                    </Button>
-                  )}
+                  {cellData.list.length === 0 &&
+                    (user.isAuthenticated && user.userRole === "admin" ? (
+                      <Button
+                        className="add-button"
+                        type="primary"
+                        onClick={() => handleAdd(day, record.time)}
+                      >
+                        +
+                      </Button>
+                    ) : (
+                      ""
+                    ))}
                 </div>
               ),
               props: {
@@ -199,14 +241,18 @@ const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
             };
           }
           return {
-            children: (
-              <Button
-                type="primary"
-                onClick={() => handleAdd(day, record.time)}
-              >
-                +
-              </Button>
-            ),
+            children:
+              user.isAuthenticated && user.userRole === "admin" ? (
+                <Button
+                  type="primary"
+                  className="add-button"
+                  onClick={() => handleAdd(day, record.time)}
+                >
+                  +
+                </Button>
+              ) : (
+                ""
+              ),
             props: {
               rowSpan: cellData.rowSpan,
               style: { backgroundColor: "none" },
@@ -224,20 +270,212 @@ const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
     })),
   ];
 
-  // Функции для обработки событий кнопок
-  const handleEdit = () => {
-    // Логика для изменения события
+  const windowReload = () => {
+    window.location.reload(); // Обновить страницу
   };
 
-  const handleDelete = () => {
-    // Логика для удаления события
+  const handleEdit = (event, time) => {
+    setIsEditing(true);
+    // Открываем модальное окно для редактирования
+    setVisible(true);
+
+    // Получаем данные тренировки
+    const { id, maxCount, serviceTypeId, typeTrainingId, coachId } = event;
+
+    // Получаем названия услуг и тренировок по их идентификаторам
+    const nameService = serviceTypes.find(
+      (type) => type.id === serviceTypeId
+    )?.nameService;
+    const nameTraining = typeTrainings.find(
+      (type) => type.id === typeTrainingId
+    )?.nameType;
+
+    // Получаем имя тренера по его идентификатору
+    const coachName = users.find((user) => user.id === coachId)?.fio;
+
+    const times = time.split(" - ");
+    const timeStart = moment(times[0], format);
+    const timeEnd = moment(times[1], format);
+
+    // Заполняем форму данными из тренировки
+    form.setFieldsValue({
+      idForm: id, // Идентификатор тренировки для обновления
+      maxCountForm: maxCount,
+      timeStartForm: timeStart,
+      timeEndForm: timeEnd,
+      dayWeekForm: event.dayWeek.day,
+      nameServiceTypeForm: nameService,
+      nameTrainingTypeForm: nameTraining,
+      coachForm: coachName,
+    });
   };
 
-  const handleAdd = () => {
-    // Логика для добавления события
+  const handleUpdateSchedule = (e) => {
+    if (isEditing) {
+      e = form.getFieldValue();
+      const valueId = e.idForm;
+      const valueNameService = e.nameServiceTypeForm;
+      const valueNameTraining = e.nameTrainingTypeForm;
+      const valueDayWeek = e.dayWeekForm;
+      const valueNameCoach = e.coachForm;
+      const valueMaxCount = e.maxCountForm;
+      const valueTimeStart = e.timeStartForm;
+      const valueTimeEnd = e.timeEndForm;
+
+      // Преобразуем время в нужный формат
+      const timeStart = dayjs(valueTimeStart).format("YYYY-MM-DDTHH:mm:ss");
+      const timeEnd = dayjs(valueTimeEnd).format("YYYY-MM-DDTHH:mm:ss");
+
+      // Находим день недели по его названию
+      const dayWeekId = weekDays.find((day) => day.day === valueDayWeek)?.id;
+
+      // Находим идентификаторы услуг и тренировок по их названиям
+      const serviceTypeId = serviceTypes.find(
+        (service) => service.nameService === valueNameService
+      )?.id;
+      const typeTrainingId = typeTrainings.find(
+        (training) => training.nameType === valueNameTraining
+      )?.id;
+
+      // Находим идентификатор тренера по его имени
+      const coachId = users.find((user) => user?.fio === valueNameCoach)?.id;
+
+      // Создаем объект с обновленными данными тренировки
+      const updatedSchedule = {
+        id: valueId,
+        maxCount: valueMaxCount,
+        timeStart: timeStart,
+        timeEnd: timeEnd,
+        dayWeekId: Number(dayWeekId),
+        serviceTypeId: Number(serviceTypeId),
+        typeTrainingId: Number(typeTrainingId),
+        coachId: Number(coachId),
+      };
+
+      console.log(updatedSchedule);
+
+      // Отправляем запрос на обновление тренировки
+      const updateSchedule = async () => {
+        const requestOptions = {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedSchedule),
+        };
+
+        const response = await fetch(`api/Shedules/${valueId}`, requestOptions);
+        return await response.json().then(
+          (data) => {
+            console.log(data);
+            if (response.ok) {
+              setVisible(false);
+              window.location.reload(); // Обновляем страницу
+            }
+          },
+          (error) => console.log(error)
+        );
+      };
+      updateSchedule();
+    } else {
+      //  добавление новой тренировки
+      const valueMaxCount = e.maxCountForm;
+      const valueDate = new Date().toISOString().split("T")[0]; // Получаем дату в формате "2024-05-08"
+      const valueTimeStart = dayjs(e.timeStartForm).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+      const valueTimeEnd = dayjs(e.timeEndForm).format("YYYY-MM-DDTHH:mm:ss");
+
+      const valueDayWeekId = weekDays.find(
+        (weekDay) => weekDay && weekDay.day === e.dayWeekForm
+      )?.id;
+      const valueCoachId = users.find((user) => user?.fio === e.coachForm)?.id;
+      const valueServiceTypeId = serviceTypes.find(
+        (service) => service.nameService === e.nameServiceTypeForm
+      )?.id;
+      const valueTypeTrainingId = typeTrainings.find(
+        (training) => training.nameType === e.nameTrainingTypeForm
+      )?.id;
+
+      const shedule = {
+        maxCount: valueMaxCount,
+        date: valueDate,
+        timeStart: valueTimeStart,
+        timeEnd: valueTimeEnd,
+        dayWeekId: valueDayWeekId,
+        coachId: valueCoachId,
+        serviceTypeId: valueServiceTypeId,
+        typeTrainingId: valueTypeTrainingId,
+      };
+
+      console.log("Новая тренировка : ", shedule);
+
+      const createShedule = async () => {
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(shedule),
+        };
+
+        console.log(requestOptions);
+        const response = await fetch("api/Shedules/", requestOptions);
+        return await response.json().then(
+          (data) => {
+            console.log(data);
+
+            if (response.ok) {
+              console.log(data);
+              addSchedule(data);
+              e.maxCountForm = "";
+              e.timeStartForm = "";
+              e.timeEndForm = "";
+              e.dayWeekForm = "";
+              e.coachForm = "";
+              e.nameServiceTypeForm = "";
+              e.nameTrainingTypeForm = "";
+            }
+          },
+
+          (error) => console.log(error)
+        );
+      };
+      createShedule();
+      setVisible(false);
+      windowReload(); // Обновить страницу
+    }
   };
 
-  const tableData = generateTableData();
+  const handleDelete = async ({ id }) => {
+    const requestOptions = {
+      method: "DELETE",
+    };
+    return await fetch(`api/Shedules/${id}`, requestOptions).then(
+      (response) => {
+        if (response.ok) {
+          removeSchedule(id);
+          setSchedules(schedules.filter((x) => x.id !== id));
+          windowReload();
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  };
+
+  const handleAdd = (day, time) => {
+    setIsEditing(false);
+    setVisible(true);
+    // Получить день недели из параметра day
+    const dayOfWeek = day.day;
+    const times = time.split(" - ");
+    const timeStart = moment(times[0], format);
+    const timeEnd = moment(times[1], format);
+    // Установить значение поля dayWeekForm в форме
+    form.setFieldsValue({
+      dayWeekForm: dayOfWeek,
+      timeStartForm: timeStart,
+      timeEndForm: timeEnd,
+    });
+  };
 
   return (
     <React.Fragment>
@@ -246,11 +484,166 @@ const Schedule = ({ schedules, setSchedules, weekDays, setWeekDays }) => {
       </Typography>
 
       <Table
-        dataSource={tableData}
+        dataSource={generateTableData()}
         columns={columns}
         pagination={false}
         bordered
       />
+
+      <Modal
+        title={modalTitle}
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+      >
+        <Form
+          style={{
+            maxWidth: 500,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={handleUpdateSchedule}
+          form={form}
+        >
+          <Form.Item
+            name="dayWeekForm"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input style={{ color: "black" }} disabled />
+          </Form.Item>
+          <Form.Item
+            name="timeStartForm"
+            label="Время начала"
+            rules={[
+              { required: true, message: "Пожалуйста, выберите время начала!" },
+            ]}
+          >
+            <TimePicker
+              format={format}
+              onChange={(time, timeString) => {
+                console.log(timeString); // Выводит время в нужном формате
+              }}
+              minuteStep={60}
+              style={{ width: "100%" }}
+              disabledHours={() => {
+                // Запрещаем выбор часов до 8 и после 19
+                return [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23];
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="timeEndForm"
+            label="Время окончания"
+            rules={[
+              {
+                required: true,
+                message: "Пожалуйста, выберите время окончания!",
+              },
+            ]}
+          >
+            <TimePicker
+              format={format}
+              onChange={(time, timeString) => {
+                console.log(timeString); // Выводит время в нужном формате
+              }}
+              minuteStep={60}
+              style={{ width: "100%" }}
+              disabledHours={() => {
+                // Запрещаем выбор часов до 9 и после 20
+                return [0, 1, 2, 3, 4, 5, 6, 7, 8, 21, 22, 23];
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Услуга: "
+            name="nameServiceTypeForm"
+            rules={[
+              {
+                required: true,
+                message: "Вы должны выбрать услугу",
+              },
+            ]}
+          >
+            <Select placeholder="Выберите услугу">
+              {serviceTypes.map(({ id, nameService }) => (
+                <Option key={id} value={nameService}>
+                  {nameService}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Тренировка: "
+            name="nameTrainingTypeForm"
+            rules={[
+              {
+                required: true,
+                message: "Вы должны выбрать тип тренировки",
+              },
+            ]}
+          >
+            <Select placeholder="Выберите тип тренировки">
+              {typeTrainings.map(({ id, nameType }) => (
+                <Option key={id} value={nameType}>
+                  {nameType}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Количество людей: "
+            name="maxCountForm"
+            rules={[
+              {
+                required: true,
+                message: "Вы должны ввести максимальное количество людей",
+              },
+            ]}
+          >
+            <Input placeholder="Количество людей" />
+          </Form.Item>
+
+          <Form.Item
+            label="Тренер: "
+            name="coachForm"
+            rules={[
+              {
+                required: true,
+                message: "Вы должны выбрать тренера",
+              },
+            ]}
+          >
+            <Select placeholder="Выберите тренера">
+              {coachs.map((coach) => (
+                <Option key={coach.id} value={coach.user.fio}>
+                  {coach.user.fio}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button onClick={() => setVisible(false)}>Отменить</Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                position: "absolute",
+                right: 20,
+              }}
+            >
+              Подтвердить
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </React.Fragment>
   );
 };

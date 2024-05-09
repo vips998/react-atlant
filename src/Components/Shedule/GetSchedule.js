@@ -1,24 +1,24 @@
 import { useEffect } from "react";
 
-const Coach = ({ setCoachs }) => {
+const GetSchedule = ({ setSchedules }) => {
   useEffect(() => {
-    const getCoachs = async () => {
+    const getShedules = async () => {
       const requestOptions = {
         method: "GET",
       };
-      return await fetch("api/Coachs/", requestOptions)
+      return await fetch("api/Shedules/", requestOptions)
         .then((response) => response.json())
         .then(
           (data) => {
             console.log("Data:", data);
-            setCoachs(data);
+            setSchedules(data);
           },
           (error) => {
             console.log(error);
           }
         );
     };
-    getCoachs();
-  }, [setCoachs]);
+    getShedules();
+  }, [setSchedules]);
 };
-export default Coach;
+export default GetSchedule;

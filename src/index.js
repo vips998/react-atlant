@@ -7,13 +7,15 @@ import Layout from "./Components/Layout/Layout";
 import LogIn from "./Components/Login/Login";
 import LogOff from "./Components/LogOff/LogOff";
 import Register from "./Components/Registration/Registration";
+import GetSchedule from "./Components/Shedule/GetSchedule";
 import Shedule from "./Components/Shedule/Shedule";
+import DayWeek from "./Components/DayWeek/DayWeek";
 import TypeTraining from "./Components/TypeTraining/TypeTraining";
 import ServiceType from "./Components/ServiceType/ServiceType";
+import Coach from "./Components/Coach/Coach";
+import User from "./Components/User/User";
 import Profile from "./Components/Profile/Profile";
 import { jwtDecode } from "jwt-decode";
-//import Coach from "./Components/Coach/Coach";
-//import DayWeek from "./Components/DayWeek/DayWeek";
 
 function App() {
   const [abonements, setAbonements] = useState([]);
@@ -29,6 +31,9 @@ function App() {
   });
   const [upAbonement, setUpAbonement] = useState({});
   const [schedules, setSchedules] = useState({});
+  const addSchedule = (schedule) => setSchedules([...schedules, schedule]);
+  const removeSchedule = (removeID) =>
+    setSchedules(schedules.filter(({ Id }) => Id !== removeID));
   const [weekDays, setWeekDays] = useState({});
   const [serviceTypes, setServiceTypes] = useState([]);
   const addServiceType = (serviceType) =>
@@ -36,6 +41,9 @@ function App() {
   const removeServiceType = (removeID) =>
     setServiceTypes(serviceTypes.filter(({ Id }) => Id !== removeID));
   const [typeTrainings, setTypeTrainings] = useState([]);
+
+  const [coachs, setCoachs] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -81,15 +89,23 @@ function App() {
             path="/Shedules"
             element={
               <>
-                {/*<Coach />*/}
-                {/*<TypeTraining />*/}
-                {/*<ServiceType />*/}
-                {/*<DayWeek />*/}
+                {<DayWeek setWeekDays={setWeekDays} />}
+                <ServiceType setServiceTypes={setServiceTypes} />
+                <TypeTraining setTypeTrainings={setTypeTrainings} />
+                <User setUsers={setUsers} />
+                <Coach setCoachs={setCoachs} />
+                <GetSchedule setSchedules={setSchedules} />
                 <Shedule
+                  user={user}
+                  weekDays={weekDays}
+                  serviceTypes={serviceTypes}
+                  typeTrainings={typeTrainings}
+                  coachs={coachs}
+                  users={users}
                   schedules={schedules}
                   setSchedules={setSchedules}
-                  weekDays={weekDays}
-                  setWeekDays={setWeekDays}
+                  addSchedule={addSchedule}
+                  removeSchedule={removeSchedule}
                 />
               </>
             }

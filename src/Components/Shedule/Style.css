@@ -26,3 +26,38 @@
 .time-interval-highlight {
   background-color: rgba(0, 0, 0, 0.2) !important; /* Цвет подсветки */
 }
+.table-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-cell-content p {
+  margin: 5px 0;
+  text-align: center;
+}
+
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.table-cell-content .button-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-button,
+.delete-button,
+.add-button {
+  margin-top: 10px;
+}
+.edit-button,
+.delete-button {
+  width: 100%;
+  height: 50px;
+}
