@@ -16,6 +16,9 @@ import Coach from "./Components/Coach/Coach";
 import User from "./Components/User/User";
 import Profile from "./Components/Profile/Profile";
 import { jwtDecode } from "jwt-decode";
+import SheduleApply from "./Components/Shedule/SheduleApply";
+import TimeTable from "./Components/TimeTable/TimeTable";
+import GetTimeTable from "./Components/TimeTable/GetTimeTable";
 
 function App() {
   const [abonements, setAbonements] = useState([]);
@@ -44,6 +47,10 @@ function App() {
 
   const [coachs, setCoachs] = useState([]);
   const [users, setUsers] = useState([]);
+
+  const [timeTables, setTimeTables] = useState({});
+  const removeTimeTable = (removeID) =>
+    setTimeTables(timeTables.filter(({ Id }) => Id !== removeID));
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -86,15 +93,39 @@ function App() {
           ></Route>
 
           <Route
+            path="/TimeTables"
+            element={
+              <>
+                <ServiceType setServiceTypes={setServiceTypes} />
+                <TypeTraining setTypeTrainings={setTypeTrainings} />
+                <User setUsers={setUsers} />
+                <Coach setCoachs={setCoachs} />
+                <GetTimeTable setTimeTables={setTimeTables} />
+                <TimeTable
+                  user={user}
+                  serviceTypes={serviceTypes}
+                  typeTrainings={typeTrainings}
+                  coachs={coachs}
+                  users={users}
+                  timeTables={timeTables}
+                  setTimeTables={setTimeTables}
+                  removeTimeTable={removeTimeTable}
+                />
+              </>
+            }
+          />
+
+          <Route
             path="/Shedules"
             element={
               <>
-                {<DayWeek setWeekDays={setWeekDays} />}
+                <DayWeek setWeekDays={setWeekDays} />
                 <ServiceType setServiceTypes={setServiceTypes} />
                 <TypeTraining setTypeTrainings={setTypeTrainings} />
                 <User setUsers={setUsers} />
                 <Coach setCoachs={setCoachs} />
                 <GetSchedule setSchedules={setSchedules} />
+                <SheduleApply user={user} schedules={schedules} />
                 <Shedule
                   user={user}
                   weekDays={weekDays}

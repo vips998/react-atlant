@@ -23,11 +23,12 @@ function getItem(label, key, icon, children) {
 const items = [
   getItem(<Link to="/">Профиль</Link>, "1", <HomeOutlined />),
   getItem(<Link to="/Shedules">Расписание</Link>, "2", <CalendarOutlined />),
+  getItem(<Link to="/TimeTables">Расписание</Link>, "3", <CalendarOutlined />),
   getItem("Клуб", "sub1", <TeamOutlined />, [
-    getItem(<Link to="/">Залы</Link>, "3"),
-    getItem(<Link to="/">Группы</Link>, "4"),
+    getItem(<Link to="/">Залы</Link>, "4"),
+    getItem(<Link to="/">Группы</Link>, "5"),
   ]),
-  getItem(<Link to="/Abonements">Абонементы</Link>, "5", <ShoppingOutlined />),
+  getItem(<Link to="/Abonements">Абонементы</Link>, "6", <ShoppingOutlined />),
 ];
 
 const App = ({ user }) => {

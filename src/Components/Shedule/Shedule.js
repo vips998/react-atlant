@@ -480,7 +480,7 @@ const Schedule = ({
   return (
     <React.Fragment>
       <Typography>
-        <h1>Расписание тренировок</h1>
+        <h1>Шаблон расписания тренировок</h1>
       </Typography>
 
       <Table
