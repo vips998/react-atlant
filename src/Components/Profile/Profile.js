@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Col, Row, Button, Modal, Form, Input, Card, List } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-const Profile = ({ user, setUser }) => {
+const Profile = ({ user, setUser, paymentsByClient }) => {
   const formattedDate = new Date(user.birthday).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "numeric",
@@ -10,33 +10,8 @@ const Profile = ({ user, setUser }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [balance, setBalance] = useState(user.clientBalance);
-  const [paymentAbonements, setPaymentAbonements] = useState([]);
 
-  useEffect(() => {
-    const getPaymentsAbonements = async () => {
-      try {
-        const response = await fetch(`/api/Payments/client/${user.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPaymentAbonements(data);
-          console.log("Купленные абонементы" + data);
-        } else {
-          console.error(
-            "Ошибка при получении списка абонементов:",
-            response.status
-          );
-        }
-      } catch (error) {
-        console.error(
-          "Ошибка при получении списка купленных абонементов:",
-          error
-        );
-      }
-    };
-    getPaymentsAbonements();
-  }, [user.id]);
-
-  console.log(paymentAbonements);
+  console.log(paymentsByClient);
 
   const updateBalance = async () => {
     const newBalance = user.clientBalance + parseFloat(balance);
@@ -150,7 +125,7 @@ const Profile = ({ user, setUser }) => {
                   style={{ margin: "8px" }}
                 >
                   <List
-                    dataSource={paymentAbonements}
+                    dataSource={paymentsByClient}
                     renderItem={(item) => {
                       return (
                         <List.Item>

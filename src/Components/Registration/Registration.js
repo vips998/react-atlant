@@ -55,7 +55,7 @@ const Register = ({ user, setUser }) => {
               email: data.email,
               clientBalance: data.clientBalance,
             });
-            navigate("/");
+            navigate("/Profile");
           }
           typeof data !== "undefined" &&
             typeof data.error !== "undefined" &&

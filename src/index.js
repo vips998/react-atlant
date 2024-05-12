@@ -15,13 +15,21 @@ import ServiceType from "./Components/ServiceType/ServiceType";
 import Coach from "./Components/Coach/Coach";
 import User from "./Components/User/User";
 import Profile from "./Components/Profile/Profile";
+import PaymentsByClient from "./Components/PaymentByClient/PaymentsByClient";
 import { jwtDecode } from "jwt-decode";
 import SheduleApply from "./Components/Shedule/SheduleApply";
 import TimeTable from "./Components/TimeTable/TimeTable";
 import GetTimeTable from "./Components/TimeTable/GetTimeTable";
+import MyVisits from "./Components/MyVisits/MyVisits";
+import VisitClient from "./Components/MyVisits/VisitsClient";
+import VisitRegister from "./Components/VisitRegister/VisitRegister";
+import Client from "./Components/Client/Client";
+import Payment from "./Components/Payment/Payment";
 
 function App() {
   const [abonements, setAbonements] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [paymentsByClient, setPaymentsByClient] = useState([]);
   const addAbonement = (abonement) => setAbonements([...abonements, abonement]);
   const removeAbonement = (removeID) =>
     setAbonements(abonements.filter(({ Id }) => Id !== removeID));
@@ -46,11 +54,19 @@ function App() {
   const [typeTrainings, setTypeTrainings] = useState([]);
 
   const [coachs, setCoachs] = useState([]);
+  const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
 
   const [timeTables, setTimeTables] = useState({});
+  const addTimeTable = (timeTable) => setTimeTables([...timeTables, timeTable]);
   const removeTimeTable = (removeID) =>
     setTimeTables(timeTables.filter(({ Id }) => Id !== removeID));
+
+  const [visitsClient, setVisitsClient] = useState([]);
+  const removeVisitRegister = (removeID) =>
+    setVisitsClient(visitsClient.filter(({ Id }) => Id !== removeID));
+
+  const [visitRegisters, setVisitRegisters] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -84,10 +100,47 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout user={user} setUser={setUser} />}>
           <Route
-            path="/"
+            path="/Profile"
             element={
               <>
-                <Profile user={user} setUser={setUser} />
+                <PaymentsByClient
+                  user={user}
+                  setPaymentsByClient={setPaymentsByClient}
+                />
+                <Profile
+                  user={user}
+                  setUser={setUser}
+                  paymentsByClient={paymentsByClient}
+                />
+              </>
+            }
+          ></Route>
+
+          <Route
+            path="/MyVisits"
+            element={
+              <>
+                <VisitClient user={user} setVisitsClient={setVisitsClient} />
+
+                <PaymentsByClient
+                  user={user}
+                  setPaymentsByClient={setPaymentsByClient}
+                />
+                <GetTimeTable setTimeTables={setTimeTables} />
+                <Coach setCoachs={setCoachs} />
+                <Client setClients={setClients} />
+                <User setUsers={setUsers} />
+                <MyVisits
+                  user={user}
+                  paymentsByClient={paymentsByClient}
+                  timeTables={timeTables}
+                  visitsClient={visitsClient}
+                  setVisitsClient={setVisitsClient}
+                  removeVisitRegister={removeVisitRegister}
+                  coachs={coachs}
+                  clients={clients}
+                  users={users}
+                />
               </>
             }
           ></Route>
@@ -96,11 +149,17 @@ function App() {
             path="/TimeTables"
             element={
               <>
+                <PaymentsByClient
+                  user={user}
+                  setPaymentsByClient={setPaymentsByClient}
+                />
+                <Payment setPayments={setPayments} />
                 <ServiceType setServiceTypes={setServiceTypes} />
                 <TypeTraining setTypeTrainings={setTypeTrainings} />
                 <User setUsers={setUsers} />
                 <Coach setCoachs={setCoachs} />
                 <GetTimeTable setTimeTables={setTimeTables} />
+                <VisitRegister setVisitRegisters={setVisitRegisters} />
                 <TimeTable
                   user={user}
                   serviceTypes={serviceTypes}
@@ -110,6 +169,10 @@ function App() {
                   timeTables={timeTables}
                   setTimeTables={setTimeTables}
                   removeTimeTable={removeTimeTable}
+                  addTimeTable={addTimeTable}
+                  paymentsByClient={paymentsByClient}
+                  payments={payments}
+                  visitRegisters={visitRegisters}
                 />
               </>
             }

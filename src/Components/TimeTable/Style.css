@@ -1,0 +1,6 @@
+.current-date-column {
+  background-color: #ffd340; /* Цвет фона для столбца с текущей датой */
+}
+.highlight-today {
+  background-color: #ffff00;
+}

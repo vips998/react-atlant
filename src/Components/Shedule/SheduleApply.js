@@ -25,16 +25,13 @@ const SheduleApply = ({ user }) => {
             content: "Шаблон успешно применен.",
           });
           setIsModalOpen(false);
-        } else {
+        } else if (response.status === 400) {
           Modal.error({
             content: "Что-то пошло не так(",
           });
         }
       },
-      (error) => console.log(error),
-      Modal.error({
-        content: "Что-то пошло не так(",
-      })
+      (error) => console.log(error)
     );
   };
 

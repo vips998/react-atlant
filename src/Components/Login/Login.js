@@ -38,7 +38,7 @@ const LogIn = ({ user, setUser }) => {
             email: body.email,
             clientBalance: body.clientBalance,
           });
-          navigate("/");
+          navigate("/Profile");
         } else if (body.error) {
           setErrorMessages(body.error);
         }

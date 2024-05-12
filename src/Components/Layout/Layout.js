@@ -20,19 +20,32 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const items = [
-  getItem(<Link to="/">Профиль</Link>, "1", <HomeOutlined />),
-  getItem(<Link to="/Shedules">Расписание</Link>, "2", <CalendarOutlined />),
-  getItem(<Link to="/TimeTables">Расписание</Link>, "3", <CalendarOutlined />),
-  getItem("Клуб", "sub1", <TeamOutlined />, [
-    getItem(<Link to="/">Залы</Link>, "4"),
-    getItem(<Link to="/">Группы</Link>, "5"),
-  ]),
-  getItem(<Link to="/Abonements">Абонементы</Link>, "6", <ShoppingOutlined />),
-];
-
 const App = ({ user }) => {
   const [collapsed, setCollapsed] = useState(false);
+
+  const items = [
+    getItem(<Link to="/Profile">Профиль</Link>, "1", <HomeOutlined />),
+    getItem(
+      <Link to="/TimeTables">Расписание</Link>,
+      "2",
+      <CalendarOutlined />
+    ),
+    user.isAuthenticated === true &&
+      user.userRole === "client" &&
+      getItem(<Link to="/MyVisits">Мои записи</Link>, "3", <TeamOutlined />),
+    user.isAuthenticated === true &&
+      user.userRole === "admin" &&
+      getItem(<Link to="/Shedules">Шаблон</Link>, "4", <CalendarOutlined />),
+    // getItem("Клуб", "sub1", <TeamOutlined />, [
+    //   getItem(<Link to="/">Залы</Link>, "5"),
+    //   getItem(<Link to="/">Группы</Link>, "6"),
+    // ]),
+    getItem(
+      <Link to="/Abonements">Абонементы</Link>,
+      "5",
+      <ShoppingOutlined />
+    ),
+  ];
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
