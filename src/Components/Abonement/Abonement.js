@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Style.css";
 import { Button, Card, Typography, Modal, Space } from "antd";
-//import { Link } from "react-router-dom";
 const Abonement = ({
   user,
   abonements,
@@ -125,15 +124,7 @@ const Abonement = ({
       </Typography>
       <Card>
         {abonements.map(
-          ({
-            id,
-            name,
-            cost,
-            countVisits,
-            countDays,
-            typeService,
-            typeTraining,
-          }) => (
+          ({ id, name, cost, countVisits, countDays, typeService }) => (
             <div className="Abonement" key={id} id={id}>
               <Card>
                 <Typography>
@@ -144,7 +135,6 @@ const Abonement = ({
                 Количество посещений: {countVisits} <br />
                 Количество дней: {countDays} <br />
                 Услуга: {typeService} <br />
-                Тип тренировки: {typeTraining} <br />
                 <br />
                 {user.isAuthenticated == true && user.userRole == "client" ? (
                   <Button
@@ -193,7 +183,6 @@ const Abonement = ({
             <li>Количество посещений: {selectedAbonement.countVisits}</li>
             <li>Количество дней: {selectedAbonement.countDays}</li>
             <li>Доступный вид спорта: {selectedAbonement.typeService}</li>
-            <li>Тип тренировки: {selectedAbonement.typeTraining}</li>
             <li>Стоимость абонемента: {selectedAbonement.cost} рублей</li>
           </ul>
         </div>

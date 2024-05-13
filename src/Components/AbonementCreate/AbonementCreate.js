@@ -10,19 +10,17 @@ const AbonementCreate = ({
   setUpAbonement,
   setAbonements,
   serviceTypes,
-  setServiceTypes,
-  addServiceType,
-  removeServiceType,
-  typeTrainings,
+  //setServiceTypes,
+  //addServiceType,
+  //removeServiceType,
 }) => {
   // Изменение абонемента
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  // для услуги
+  // для услуг
   const [isTypeServiceModalOpen, setIsTypeServiceModalOpen] = useState(false);
-  const [isTypeServiceCreateModalOpen, setIsTypeServiceCreateModalOpen] =
-    useState(false);
+
   // открытие модального окна с услугами
   const showTypeServiceModal = () => {
     setIsTypeServiceModalOpen(true);
@@ -35,59 +33,14 @@ const AbonementCreate = ({
   const handleServiceSelection = (id, nameService) => {
     //e.preventDefault(); // Закрываем модальное окно с выбором типа тренировки
     handleTypeServiceModalClose();
-    // Отобразим выбранный тип тренировки в модальном окне "Абонемент"
+    // Отобразим выбранный тип тренировки в модальном окне
     form.setFieldsValue({
       typeServiceAbonement: nameService,
     });
     console.log(nameService);
   };
 
-  // добавление новой услуги
-  // открытие модального окна со списком услуг
-  const showTypeServiceCreateModal = () => {
-    setIsTypeServiceCreateModalOpen(true);
-  };
-
-  // закрытие модального окна
-  const handleTypeServiceCreateModalClose = () => {
-    setIsTypeServiceCreateModalOpen(false);
-  };
-
   /////////////////////////////////////////////////////////////////////////////////////
-  // для типа тренировки
-  const [isTypeTrainingModalOpen, setIsTypeTrainingModalOpen] = useState(false);
-  const [isTypeTrainingCreateModalOpen, setIsTypeTrainingCreateModalOpen] =
-    useState(false);
-  // открытие модального окна с типами тренировок
-  const showTypeTrainingModal = () => {
-    setIsTypeTrainingModalOpen(true);
-  };
-
-  const handleTypeTrainingModalClose = () => {
-    setIsTypeTrainingModalOpen(false);
-  };
-
-  // Выбор типа абонемента из 2-го модального окна
-  const handleTypeSelection = (id, nameType) => {
-    //e.preventDefault(); // Закрываем модальное окно с выбором типа тренировки
-    handleTypeTrainingModalClose();
-    // Отобразим выбранный тип тренировки в модальном окне "Абонемент"
-    form.setFieldsValue({
-      typeTrainingAbonement: nameType,
-    });
-    console.log(nameType);
-  };
-
-  // добавление нового типа тренировок
-  // открытие модального окна с типами тренировок
-  const showTypeTrainingCreateModal = () => {
-    setIsTypeTrainingCreateModalOpen(true);
-  };
-
-  // закрытие модального окна
-  const handleTypeTrainingCreateModalClose = () => {
-    setIsTypeTrainingCreateModalOpen(false);
-  };
 
   useEffect(() => {
     console.log(JSON.stringify(upAbonement));
@@ -105,7 +58,6 @@ const AbonementCreate = ({
       countVisits: "",
       countDays: "",
       typeService: "",
-      typeTraining: "",
     });
     setIsModalOpen(true);
   };
@@ -117,10 +69,9 @@ const AbonementCreate = ({
     setUpAbonement({});
   };
 
-  //const handleModalCloseAndRefresh = () => {
-  //  handleCancel(); // Закрыть модальное окно
-  //  window.location.reload(); // Обновить страницу
-  //};
+  // const windowReload = () => {
+  //   window.location.reload(); // Обновить страницу
+  // };
 
   const updateAbonement = () => {
     form.setFieldsValue({
@@ -130,7 +81,6 @@ const AbonementCreate = ({
       countVisitsAbonement: upAbonement.countVisits,
       countDaysAbonement: upAbonement.countDays,
       typeServiceAbonement: upAbonement.typeService,
-      typeTrainingAbonement: upAbonement.typeTraining,
     });
   };
 
@@ -144,7 +94,6 @@ const AbonementCreate = ({
     const valueCountVisit = e.countVisitsAbonement;
     const valueCountDays = e.countDaysAbonement;
     const valueTypeService = e.typeServiceAbonement;
-    const valueTypeTraining = e.typeTrainingAbonement;
 
     const abonement = {
       id: valueId,
@@ -153,7 +102,6 @@ const AbonementCreate = ({
       countVisits: Number(valueCountVisit),
       countDays: Number(valueCountDays),
       typeService: valueTypeService,
-      typeTraining: valueTypeTraining,
     };
 
     console.log("проверка");
@@ -177,18 +125,16 @@ const AbonementCreate = ({
         e.countVisitsAbonement = "";
         e.countDaysAbonement = "";
         e.typeServiceAbonement = "";
-        e.typeTrainingAbonement = "";
       });
   };
 
   const handleSubmit = (e) => {
-    //e.preventDefault();
+    e = form.getFieldValue();
     const valueName = e.nameAbonement;
     const valueCost = e.costAbonement;
     const valueCountVisit = e.countVisitsAbonement;
     const valueCountDays = e.countDaysAbonement;
     const valueTypeService = e.typeServiceAbonement;
-    const valueTypeTraining = e.typeTrainingAbonement;
 
     const abonement = {
       name: valueName,
@@ -196,7 +142,6 @@ const AbonementCreate = ({
       countVisits: Number(valueCountVisit),
       countDays: Number(valueCountDays),
       typeService: valueTypeService,
-      typeTraining: valueTypeTraining,
     };
 
     console.log("Новый абонемент : ", abonement);
@@ -222,7 +167,6 @@ const AbonementCreate = ({
             e.countVisitsAbonement = "";
             e.countDaysAbonement = "";
             e.typeServiceAbonement = "";
-            e.typeTrainingAbonement = "";
           }
         },
 
@@ -231,63 +175,9 @@ const AbonementCreate = ({
     };
     createAbonement();
     handleCancel();
+    //windowReload();
   };
 
-  //////////////////////////////////////////////////////////////////////////
-  const handleSubmitServiceType = (e) => {
-    //e.preventDefault();
-    const valueNameService = e.newtypeService;
-
-    const typeservice = {
-      nameService: valueNameService,
-    };
-
-    console.log("Новый тип услуги : ", typeservice);
-
-    const createServiceType = async () => {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(typeservice),
-      };
-
-      console.log(requestOptions);
-      const response = await fetch("api/ServiceTypes/", requestOptions);
-      return await response.json().then(
-        (data) => {
-          console.log(data);
-
-          if (response.ok) {
-            console.log(data);
-            addServiceType(data);
-            e.newtypeService = "";
-          }
-        },
-
-        (error) => console.log(error)
-      );
-    };
-    createServiceType();
-    handleTypeServiceCreateModalClose();
-  };
-
-  const deleteServiceType = async ({ id }) => {
-    const requestOptions = {
-      method: "DELETE",
-    };
-    return await fetch(`api/ServiceTypes/${id}`, requestOptions).then(
-      (response) => {
-        if (response.ok) {
-          removeServiceType(id);
-          setServiceTypes(serviceTypes.filter((x) => x.id !== id));
-          isTypeServiceModalOpen.reload;
-        }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  };
   return (
     <React.Fragment>
       {user.isAuthenticated && user.userRole == "admin" ? (
@@ -310,7 +200,6 @@ const AbonementCreate = ({
               initialValues={{
                 remember: true,
               }}
-              onFinish={handleSubmit}
               form={form}
             >
               <Form.Item
@@ -344,7 +233,8 @@ const AbonementCreate = ({
                 name="countVisitsAbonement"
                 rules={[
                   {
-                    required: false,
+                    required: true,
+                    message: "Введите количество посещений",
                   },
                 ]}
               >
@@ -356,7 +246,8 @@ const AbonementCreate = ({
                 name="countDaysAbonement"
                 rules={[
                   {
-                    required: false,
+                    required: true,
+                    message: "Введите количество дней",
                   },
                 ]}
               >
@@ -418,16 +309,6 @@ const AbonementCreate = ({
                             }}
                           >
                             <h3>{nameService}</h3>
-                            <Button.Group>
-                              <Button
-                                style={{ width: "80px" }}
-                                type="primary"
-                                danger
-                                onClick={() => deleteServiceType({ id })}
-                              >
-                                Удалить
-                              </Button>
-                            </Button.Group>
                           </div>
                           <Button
                             type="primary"
@@ -442,178 +323,15 @@ const AbonementCreate = ({
                       </div>
                     ))}
                   </Card>
-                  <Card>
-                    <Button type="primary" onClick={showTypeServiceCreateModal}>
-                      Добавить новую услугу
-                    </Button>
-                  </Card>
                 </Typography>
-                {/*3 модальное окно - добавление типа тренировки*/}
-                <Modal
-                  title="Новая услуга"
-                  open={isTypeServiceCreateModalOpen}
-                  onCancel={handleTypeServiceCreateModalClose}
-                  footer={null}
-                >
-                  <Form
-                    onFinish={(values) => {
-                      handleSubmitServiceType(values);
-                      handleTypeTrainingCreateModalClose();
-                    }}
-                  >
-                    <Form.Item
-                      label="Услуга: "
-                      name="newtypeService"
-                      rules={[
-                        {
-                          required: false,
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Например: Йога" />
-                    </Form.Item>
-                    <Space>
-                      <Button
-                        style={{
-                          position: "absolute",
-                          right: 20,
-                        }}
-                        type="primary"
-                        htmlType="submit"
-                      >
-                        Подтвердить
-                      </Button>
-                    </Space>
-                  </Form>
-                  <Button onClick={handleTypeServiceCreateModalClose}>
-                    Отменить
-                  </Button>
-                </Modal>
-              </Modal>
-
-              <Form.Item label="Тип тренировки: " name="typeTrainingAbonement">
-                <Input.Group
-                  compact
-                  style={{ display: "flex", alignItems: "center" }}
-                >
-                  <Form.Item
-                    name="typeTrainingAbonement"
-                    noStyle
-                    rules={[
-                      {
-                        required: true,
-                        message: "Выберите тип тренировки",
-                      },
-                    ]}
-                  >
-                    <Input
-                      style={{ width: "calc(100% - 100px)", color: "black" }}
-                      disabled
-                      placeholder="Тип тренировки не выбран"
-                    />
-                  </Form.Item>
-                  <Form.Item noStyle>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      onClick={showTypeTrainingModal}
-                      style={{ width: "100px" }}
-                    >
-                      Выбрать
-                    </Button>
-                  </Form.Item>
-                </Input.Group>
-              </Form.Item>
-              <Modal
-                title="Выберите тип тренировки"
-                open={isTypeTrainingModalOpen}
-                onCancel={handleTypeTrainingModalClose}
-                footer={null}
-              >
-                {/* Список типов тренировок */}
-                <Typography>
-                  <h3>Типы тренировки</h3>
-                  <Card>
-                    {typeTrainings.map(({ id, nameType }) => (
-                      <div className="TypeTraining" key={id} id={id}>
-                        {/* здесь можно тоже проверку на пользователя*/}
-                        <Card>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            <h3>{nameType}</h3>
-                            <Button.Group>
-                              <Button
-                                style={{ width: "80px" }}
-                                type="primary"
-                                danger
-                              >
-                                Удалить
-                              </Button>
-                            </Button.Group>
-                          </div>
-                          <Button
-                            type="primary"
-                            style={{ marginTop: "10px", width: "100%" }}
-                            onClick={() => handleTypeSelection(id, nameType)}
-                          >
-                            Выбрать
-                          </Button>
-                        </Card>
-                      </div>
-                    ))}
-                  </Card>
-                  <Card>
-                    <Button
-                      type="primary"
-                      onClick={showTypeTrainingCreateModal}
-                    >
-                      Добавить новый тип
-                    </Button>
-                  </Card>
-                </Typography>
-                {/*3 модальное окно - добавление типа тренировки*/}
-                <Modal
-                  title="Новый тип тренировки"
-                  open={isTypeTrainingCreateModalOpen}
-                  onCancel={handleTypeTrainingCreateModalClose}
-                  footer={null}
-                >
-                  <Form>
-                    <Form.Item
-                      label="Тип тренировки: "
-                      name="newtypeTraining"
-                      rules={[
-                        {
-                          required: false,
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Например: Групповая" />
-                    </Form.Item>
-                  </Form>
-                  <Button onClick={handleTypeTrainingCreateModalClose}>
-                    Отменить
-                  </Button>
-                  <Button
-                    style={{
-                      position: "absolute",
-                      right: 20,
-                    }}
-                    type="primary"
-                    //onClick={}
-                  >
-                    Подтвердить
-                  </Button>
-                </Modal>
               </Modal>
               <Space>
                 {JSON.stringify(upAbonement) === "{}" ? (
-                  <Button type="primary" htmlType="submit">
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    onClick={handleSubmit}
+                  >
                     Добавить абонемент
                   </Button>
                 ) : (

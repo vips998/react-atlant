@@ -5,6 +5,8 @@ import {
   TeamOutlined,
   ShoppingOutlined,
   UserOutlined,
+  ProductOutlined,
+  IdcardFilled,
 } from "@ant-design/icons";
 import { Col, Layout, Menu, Row } from "antd";
 import { Outlet, Link } from "react-router-dom";
@@ -36,15 +38,13 @@ const App = ({ user }) => {
     user.isAuthenticated === true &&
       user.userRole === "admin" &&
       getItem(<Link to="/Shedules">Шаблон</Link>, "4", <CalendarOutlined />),
-    // getItem("Клуб", "sub1", <TeamOutlined />, [
-    //   getItem(<Link to="/">Залы</Link>, "5"),
-    //   getItem(<Link to="/">Группы</Link>, "6"),
-    // ]),
     getItem(
       <Link to="/Abonements">Абонементы</Link>,
       "5",
       <ShoppingOutlined />
     ),
+    getItem(<Link to="/Services">Услуги</Link>, "6", <ProductOutlined />),
+    getItem(<Link to="/Coachs">Тренеры</Link>, "7", <IdcardFilled />),
   ];
 
   return (

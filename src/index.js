@@ -25,6 +25,9 @@ import VisitClient from "./Components/MyVisits/VisitsClient";
 import VisitRegister from "./Components/VisitRegister/VisitRegister";
 import Client from "./Components/Client/Client";
 import Payment from "./Components/Payment/Payment";
+import ServicePage from "./Components/ServiceType/ServicePage";
+import ServiceTypeCreate from "./Components/ServiceType/ServiceCreate";
+import CoachPage from "./Components/Coach/CoachPage";
 
 function App() {
   const [abonements, setAbonements] = useState([]);
@@ -46,7 +49,9 @@ function App() {
   const removeSchedule = (removeID) =>
     setSchedules(schedules.filter(({ Id }) => Id !== removeID));
   const [weekDays, setWeekDays] = useState({});
+
   const [serviceTypes, setServiceTypes] = useState([]);
+  const [upServiceType, setUpServiceType] = useState({});
   const addServiceType = (serviceType) =>
     setServiceTypes([...serviceTypes, serviceType]);
   const removeServiceType = (removeID) =>
@@ -241,6 +246,43 @@ function App() {
               </>
             }
           />
+
+          <Route
+            path="/Services"
+            element={
+              <>
+                <ServiceType setServiceTypes={setServiceTypes} />
+                <ServiceTypeCreate
+                  user={user}
+                  setUser={setUser}
+                  addServiceType={addServiceType}
+                  upServiceType={upServiceType}
+                  setUpServiceType={setUpServiceType}
+                  serviceTypes={serviceTypes}
+                  setServiceTypes={setServiceTypes}
+                />
+                <ServicePage
+                  user={user}
+                  serviceTypes={serviceTypes}
+                  setServiceTypes={setServiceTypes}
+                  setUpServiceType={setUpServiceType}
+                  removeServiceType={removeServiceType}
+                />
+              </>
+            }
+          ></Route>
+
+          <Route
+            path="/Coachs"
+            element={
+              <>
+                <User setUsers={setUsers} />
+                <Coach setCoachs={setCoachs} />
+                <CoachPage coachs={coachs} users={users} />
+              </>
+            }
+          />
+
           <Route
             path="/register"
             element={<Register user={user} setUser={setUser} />}

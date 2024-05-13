@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Col, Row, Button, Modal, Form, Input, Card, List } from "antd";
+import { Col, Row, Button, Modal, Form, Input, Card, List, Result } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 const Profile = ({ user, setUser, paymentsByClient }) => {
   const formattedDate = new Date(user.birthday).toLocaleDateString("en-GB", {
@@ -168,9 +168,6 @@ const Profile = ({ user, setUser, paymentsByClient }) => {
                             <div>
                               Осталось тренировок: {item.countRemainTraining}
                             </div>
-                            <div>
-                              Тип тренировки: {item.abonement.typeTraining}
-                            </div>
                             <div>Тип услуги: {item.abonement.typeService}</div>
                             <div
                               style={{
@@ -206,7 +203,11 @@ const Profile = ({ user, setUser, paymentsByClient }) => {
           </Modal>
         </>
       ) : (
-        "Для отображения данной страницы необходима авторизация!"
+        <Result
+          status="403"
+          title="Гость"
+          subTitle="Для отображения данной страницы необходима авторизация!"
+        />
       )}
     </React.Fragment>
   );

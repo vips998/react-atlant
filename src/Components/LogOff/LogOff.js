@@ -24,7 +24,7 @@ const LogOff = ({ setUser }) => {
           setUser({ isAuthenticated: false, userName: "", userRole: "" });
           // Очищаем данные пользователя из localStorage
           localStorage.removeItem("jwt");
-          navigate("/");
+          navigate("/Profile");
         } else if (response.status === 401) {
           navigate("/login");
         }
@@ -35,7 +35,7 @@ const LogOff = ({ setUser }) => {
   const handleCancel = () => {
     console.log("Clicked cancel button");
     setOpen(false);
-    navigate("/");
+    navigate("/Profile");
   };
   return (
     <>
