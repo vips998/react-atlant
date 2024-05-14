@@ -270,8 +270,8 @@ const TimeTableComponent = ({
                         }
                       </p>
                       {user.isAuthenticated == true &&
-                      user.userRole == "client" ? (
-                        //&& event.date >= currentDate.toISOString()
+                      user.userRole == "client" &&
+                      event.date >= currentDate.toISOString() ? (
                         <div className="button-container">
                           <Button
                             className="recordClientToTimeTable-button"
