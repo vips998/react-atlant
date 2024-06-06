@@ -94,11 +94,18 @@ const MyVisits = ({
                               Услуга
                             </Typography.Text>
                           </Typography>
-                          {
-                            paymentsByClient.find(
-                              (type) => type.id === visit.paymentId
-                            )?.abonement.typeService
-                          }
+
+                          {paymentsByClient
+                            .find(
+                              (payment) =>
+                                payment.id ===
+                                visit.paymentVisits?.find(
+                                  (pv) => pv.visitRegisterId === visit.id
+                                )?.paymentId
+                            )
+                            ?.paymentAbonement?.map(
+                              (abonement) => abonement.abonement?.typeService
+                            ) || "Нет данных"}
                         </Col>
                         <Col span={4}>
                           <Typography>
@@ -110,7 +117,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.date.substring(0, 10)}
                         </Col>
                         <Col span={4}>
@@ -123,7 +136,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeStart.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -136,7 +155,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeEnd.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -156,7 +181,11 @@ const MyVisits = ({
                                   (coach) =>
                                     coach.userId ===
                                     timeTables.find(
-                                      (type) => type.id === visit.timeTableId
+                                      (type) =>
+                                        type.id ===
+                                        visit.visitRegisterTimeTables.find(
+                                          (pv) => pv.id === visit.id
+                                        )?.timeTableId
                                     )?.coachId
                                 )?.userId
                             )?.fio
@@ -201,9 +230,14 @@ const MyVisits = ({
                               Услуга
                             </Typography.Text>
                           </Typography>
+
                           {
                             paymentsByClient.find(
-                              (type) => type.id === visit.paymentId
+                              (payment) =>
+                                payment.id ===
+                                visit.paymentVisits.find(
+                                  (pv) => pv.visitRegisterId === visit.id
+                                )?.paymentId
                             )?.abonement.typeService
                           }
                         </Col>
@@ -217,7 +251,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.date.substring(0, 10)}
                         </Col>
                         <Col span={4}>
@@ -230,7 +270,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeStart.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -243,7 +289,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeEnd.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -263,7 +315,11 @@ const MyVisits = ({
                                   (coach) =>
                                     coach.userId ===
                                     timeTables.find(
-                                      (type) => type.id === visit.timeTableId
+                                      (type) =>
+                                        type.id ===
+                                        visit.visitRegisterTimeTables.find(
+                                          (pv) => pv.id === visit.id
+                                        )?.timeTableId
                                     )?.coachId
                                 )?.userId
                             )?.fio
@@ -312,9 +368,14 @@ const MyVisits = ({
                               Услуга
                             </Typography.Text>
                           </Typography>
+
                           {
                             paymentsByClient.find(
-                              (type) => type.id === visit.paymentId
+                              (payment) =>
+                                payment.id ===
+                                visit.paymentVisits.find(
+                                  (pv) => pv.visitRegisterId === visit.id
+                                )?.paymentId
                             )?.abonement.typeService
                           }
                         </Col>
@@ -328,7 +389,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.date.substring(0, 10)}
                         </Col>
                         <Col span={4}>
@@ -341,7 +408,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeStart.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -354,7 +427,13 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
                           {timeTables
-                            .find((type) => type.id === visit.timeTableId)
+                            .find(
+                              (type) =>
+                                type.id ===
+                                visit.visitRegisterTimeTables.find(
+                                  (pv) => pv.id === visit.id
+                                )?.timeTableId
+                            )
                             ?.timeEnd.substring(11, 16)}
                         </Col>
                         <Col span={4}>
@@ -374,7 +453,11 @@ const MyVisits = ({
                                   (coach) =>
                                     coach.userId ===
                                     timeTables.find(
-                                      (type) => type.id === visit.timeTableId
+                                      (type) =>
+                                        type.id ===
+                                        visit.visitRegisterTimeTables.find(
+                                          (pv) => pv.id === visit.id
+                                        )?.timeTableId
                                     )?.coachId
                                 )?.userId
                             )?.fio

@@ -11,8 +11,8 @@ const Profile = ({ user, setUser, paymentsByClient }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [balance, setBalance] = useState(user.clientBalance);
 
+  console.log("paymentsByClient");
   console.log(paymentsByClient);
-
   const updateBalance = async () => {
     const newBalance = user.clientBalance + parseFloat(balance);
 
@@ -126,62 +126,68 @@ const Profile = ({ user, setUser, paymentsByClient }) => {
                 >
                   <List
                     dataSource={paymentsByClient}
-                    renderItem={(item) => {
-                      return (
-                        <List.Item>
-                          <Card
-                            style={{
-                              width: "100%",
-                              marginTop: "12px",
-                              padding: "12px",
-                              borderRadius: "8px",
-                              boxShadow:
-                                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                              backgroundColor: item.isValid
-                                ? "#C0F400"
-                                : "#FF9640",
-                            }}
-                          >
-                            <h2>{item.abonement.name}</h2>
-                            <div>
-                              Дата начала:{" "}
-                              {new Date(item.dateStart).toLocaleDateString(
-                                "en-GB",
-                                {
-                                  day: "numeric",
-                                  month: "numeric",
-                                  year: "numeric",
-                                }
-                              )}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Card
+                          style={{
+                            width: "100%",
+                            marginTop: "12px",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            boxShadow:
+                              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                            backgroundColor: item.isValid
+                              ? "#C0F400"
+                              : "#FF9640",
+                          }}
+                        >
+                          {item.paymentAbonement.map((abonement) => (
+                            <div key={abonement.id}>
+                              <h2>{abonement.abonement?.name}</h2>
+                              <div>
+                                Дата начала:{" "}
+                                {new Date(item.dateStart).toLocaleDateString(
+                                  "en-GB",
+                                  {
+                                    day: "numeric",
+                                    month: "numeric",
+                                    year: "numeric",
+                                  }
+                                )}
+                              </div>
+                              <div>
+                                Дата окончания:{" "}
+                                {new Date(item.dateEnd).toLocaleDateString(
+                                  "en-GB",
+                                  {
+                                    day: "numeric",
+                                    month: "numeric",
+                                    year: "numeric",
+                                  }
+                                )}
+                              </div>
+                              <div>
+                                Осталось тренировок: {item.countRemainTraining}
+                              </div>
+                              <div>
+                                Тип услуги: {abonement.abonement?.typeService}
+                              </div>
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "12px",
+                                  right: "12px",
+                                }}
+                              >
+                                {item.isValid
+                                  ? "Действителен"
+                                  : "Недействителен"}
+                              </div>
                             </div>
-                            <div>
-                              Дата окончания:{" "}
-                              {new Date(item.dateEnd).toLocaleDateString(
-                                "en-GB",
-                                {
-                                  day: "numeric",
-                                  month: "numeric",
-                                  year: "numeric",
-                                }
-                              )}
-                            </div>
-                            <div>
-                              Осталось тренировок: {item.countRemainTraining}
-                            </div>
-                            <div>Тип услуги: {item.abonement.typeService}</div>
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: "12px",
-                                right: "12px",
-                              }}
-                            >
-                              {item.isValid ? "Действителен" : "Недействителен"}
-                            </div>
-                          </Card>
-                        </List.Item>
-                      );
-                    }}
+                          ))}
+                        </Card>
+                      </List.Item>
+                    )}
                   />
                 </Card>
               </Col>

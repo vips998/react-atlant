@@ -657,13 +657,16 @@ const TimeTableComponent = ({
     }
 
     const matchingAbonement = paymentsByClient.find(
-      (abonement) =>
-        abonement.abonement.typeService ===
-          serviceTypes.find((type) => type.id === date.serviceTypeId)
-            ?.nameService &&
-        abonement.isValid &&
-        abonement.countRemainTraining > 0 &&
-        abonement.dateEnd >= date.date
+      (payment) =>
+        payment.paymentAbonement.some(
+          (abonement) =>
+            abonement.abonement?.typeService ===
+            serviceTypes.find((type) => type.id === date.serviceTypeId)
+              ?.nameService
+        ) &&
+        payment.isValid &&
+        payment.countRemainTraining > 0 &&
+        payment.dateEnd >= date.date
     );
 
     // Проверка наличия подходящего абонемента

@@ -22,11 +22,20 @@ const AttendanceModal = ({
 
   useEffect(() => {
     const filteredVisitRegisters = visitRegisters.filter(
-      (visitRegister) => visitRegister.timeTableId === event.id
+      (visitRegister) =>
+        visitRegister.visitRegisterTimeTables.find(
+          (pv) => pv.id === visitRegister.id
+        )?.timeTableId === event.id
     );
 
     const data = filteredVisitRegisters.map((visitRegister) => {
-      const payment = payments.find((p) => p.id === visitRegister.paymentId);
+      const payment = payments.find(
+        (p) =>
+          p.id ===
+          visitRegister.paymentVisits.find(
+            (pv) => pv.visitRegisterId === visitRegister.id
+          )?.paymentId
+      );
       const user = users.find((u) => u.id === payment.userId);
       return {
         id: visitRegister.id,
@@ -36,7 +45,8 @@ const AttendanceModal = ({
         timetableId: event.id,
       };
     });
-
+    console.log("dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    console.log(data);
     setAttendanceData(data);
   }, [visitRegisters, payments, users, event]);
 

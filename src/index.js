@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import Abonement from "./Components/Abonement/Abonement";
 import AbonementCreate from "./Components/AbonementCreate/AbonementCreate";
+import GetAbonements from "./Components/Abonement/GetAbonements";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import LogIn from "./Components/Login/Login";
@@ -112,9 +113,11 @@ function App() {
                   user={user}
                   setPaymentsByClient={setPaymentsByClient}
                 />
+                <GetAbonements setAbonements={setAbonements} />
                 <Profile
                   user={user}
                   setUser={setUser}
+                  abonements={abonements}
                   paymentsByClient={paymentsByClient}
                 />
               </>
