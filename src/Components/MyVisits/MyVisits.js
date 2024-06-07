@@ -231,15 +231,17 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
 
-                          {
-                            paymentsByClient.find(
+                          {paymentsByClient
+                            .find(
                               (payment) =>
                                 payment.id ===
-                                visit.paymentVisits.find(
+                                visit.paymentVisits?.find(
                                   (pv) => pv.visitRegisterId === visit.id
                                 )?.paymentId
-                            )?.abonement.typeService
-                          }
+                            )
+                            ?.paymentAbonement?.map(
+                              (abonement) => abonement.abonement?.typeService
+                            ) || "Нет данных"}
                         </Col>
                         <Col span={4}>
                           <Typography>
@@ -369,15 +371,17 @@ const MyVisits = ({
                             </Typography.Text>
                           </Typography>
 
-                          {
-                            paymentsByClient.find(
+                          {paymentsByClient
+                            .find(
                               (payment) =>
                                 payment.id ===
-                                visit.paymentVisits.find(
+                                visit.paymentVisits?.find(
                                   (pv) => pv.visitRegisterId === visit.id
                                 )?.paymentId
-                            )?.abonement.typeService
-                          }
+                            )
+                            ?.paymentAbonement?.map(
+                              (abonement) => abonement.abonement?.typeService
+                            ) || "Нет данных"}
                         </Col>
                         <Col span={4}>
                           <Typography>
